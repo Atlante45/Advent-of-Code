@@ -1,90 +1,65 @@
 #!/usr/bin/env python3
 import os
-import copy
 
-
-def part1(input):
-    res = 0
-
-    hm = []
-    for line in input:
-        hm.append([int(v) for v in line.strip()])
-
-    for i in range(len(hm)):
-        for j in range(len(hm[0])):
-            if i > 0 and hm[i][j] >= hm[i - 1][j]:
-                continue
-            if i < len(hm) - 1 and hm[i][j] >= hm[i + 1][j]:
-                continue
-            if j > 0 and hm[i][j] >= hm[i][j - 1]:
-                continue
-            if j < len(hm[0]) - 1 and hm[i][j] >= hm[i][j + 1]:
-                continue
-
-
-    # print(hm)
-
-    return res
-
-
-def neigh(hm, i, j):
-    n = []
+def findNeighbors(heighmap, i, j):
+    neighbors = []
+    height = len(heighmap)
+    width = len(heighmap[0])
     if i > 0:
-        n.append((i - 1, j))
-    if i < len(hm) - 1:
-        n.append((i + 1, j))
+        neighbors.append((i - 1, j))
+    if i < height - 1:
+        neighbors.append((i + 1, j))
     if j > 0:
-        n.append((i, j - 1))
-    if j < len(hm[0]) - 1:
-        n.append((i, j + 1))
+        neighbors.append((i, j - 1))
+    if j < width - 1:
+        neighbors.append((i, j + 1))
 
-    return n
+    return neighbors
 
-def spread(hm, i, j):
-    res = 0
-    for (i1, j1) in neigh(hm, i, j):
-        if hm[i1][j1] >= hm[i][j]:
-            continue
+def findLowestPoints(heighmap):
+    lowestPoints = []
+    height = len(heighmap)
+    width = len(heighmap[0])
+    for i in range(height):
+        for j in range(width):
+            lowest = True
+            for (i1, j1) in findNeighbors(heighmap, i, j):
+                if heighmap[i][j] >= heighmap[i1][j1]:
+                    lowest = False
+                    break
+            if lowest:
+                lowestPoints += [(i, j)]
 
-        hm[i1][j1] = 9
-        res += 1 + spread(hm, i1, j1)
+    return lowestPoints
+
+def computeBasin(heighmap, i, j):
+    res = 1
+    heighmap[i][j] = 9
+    for (i1, j1) in findNeighbors(heighmap, i, j):
+        if heighmap[i1][j1] != 9:
+            res += computeBasin(heighmap, i1, j1)
+
     return res
 
 
-def computeBasin(hm, i, j):
-    hm = copy.deepcopy(hm)
+def part1(heighmap):
+    res = 0
 
-    hm[i][j] = 9
-    return 1 + spread(hm, i, j)
+    for (i, j) in findLowestPoints(heighmap):
+        res += 1 + heighmap[i][j]
 
+    return res
 
-def part2(input):
+def part2(heighmap):
     res = 0
 
     basins = []
-    hm = []
-    for line in input:
-        hm.append([int(v) for v in line.strip()])
 
-    for i in range(len(hm)):
-        for j in range(len(hm[0])):
-            if i > 0 and hm[i][j] >= hm[i - 1][j]:
-                continue
-            if i < len(hm) - 1 and hm[i][j] >= hm[i + 1][j]:
-                continue
-            if j > 0 and hm[i][j] >= hm[i][j - 1]:
-                continue
-            if j < len(hm[0]) - 1 and hm[i][j] >= hm[i][j + 1]:
-                continue
-
-            basins.append(computeBasin(hm, i, j))
-
+    for (i, j) in findLowestPoints(heighmap):
+        basins.append(computeBasin(heighmap, i, j))
 
     basins = sorted(basins)
-    print(basins)
-    print(basins[-1], basins[-2], basins[-3])
-
-    return basins[-1] * basins[-2] * basins[-3]
+    return basins[-3] * basins[-2] * basins[-1]
 
 
 def readInput(filename):
@@ -95,10 +70,14 @@ def solve(filename):
     inputFile = os.path.join(os.path.dirname(__file__), filename)
     input = readInput(inputFile)
 
+    heighmap = []
+    for line in input:
+        heighmap.append([int(v) for v in line.strip()])
+
     if input:
         print(f'Solving {filename}')
-        print(f"    Part 1: {part1(input)}")
-        print(f"    Part 2: {part2(input)}")
+        print(f"    Part 1: {part1(heighmap)}")
+        print(f"    Part 2: {part2(heighmap)}")
 
 def main():
     solve('example.txt')
