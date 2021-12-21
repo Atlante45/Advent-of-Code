@@ -1,54 +1,29 @@
 #!/usr/bin/env python3
 from collections import defaultdict
+from itertools import count
 import os
-from tkinter import scrolledtext
-from turtle import pos, position
 
-def roll_die(x):
-    # print(x)
-    res = x
-    x = (x + 1) % 100
-    res += x
-    x = (x + 1) % 100
-    res += x
-    # print('  ', res + 3)
-    return res + 3
+def roll(die):
+    return 1 + (next(die) - 1) % 100
+
+def step(positions, scores, player, die):
+    move = roll(die) + roll(die) + roll(die)
+    positions[player] = (positions[player] + move) % 10
+    scores[player] += positions[player] + 1
 
 def part1(input):
-    res = 0
+    die = count(1)
 
-    pos1 = input[0] - 1
-    pos2 = input[1] - 1
-    score1 = 0
-    score2 = 0
-    die = 0
-    rolls = 0
-    while score1 < 1000 and score2 < 1000:
-        pos1 = (pos1 + roll_die(die)) % 10
-        score1 += pos1 + 1
-        die = (die + 3) % 100
-        rolls += 3
-        # print(f'1: {pos1} {score1}')
-        if score1 >= 1000:
-            # print(rolls, score1, score2)
-            return rolls * score2
+    positions = [input[0] - 1, input[1] - 1]
+    scores = [0, 0]
+    while True:
+        for player in range(2):
+            step(positions, scores, player, die)
+            if scores[player] >= 1000:
+                return (next(die) - 1) * scores[player - 1]
 
-
-        pos2 = (pos2 + roll_die(die)) % 10
-        score2 += pos2 + 1
-        die = (die + 3) % 100
-        rolls += 3
-        # print(f'2: {pos2} {score2}')
-        if score2 >= 1000:
-            # print(rolls, score1, score2)
-            return rolls * score1
-
-
-    # print(score1, score2)
-    return score1 * score2
 
 UNIVERSES = [0, 0, 0, 1, 3, 6, 7, 6, 3, 1]
-UNIVERSES_MULT = sum(UNIVERSES)
 
 def part2(input):
     boards = {}
