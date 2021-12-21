@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-from collections import defaultdict
+#!/usr/local/bin/python3
+from functools import cache
 from itertools import count
 import os
 
@@ -14,52 +14,32 @@ def step(positions, scores, player, die):
 def part1(input):
     die = count(1)
 
-    positions = [input[0] - 1, input[1] - 1]
+    positions = [p - 1 for p in input]
     scores = [0, 0]
-    while True:
-        for player in range(2):
-            step(positions, scores, player, die)
-            if scores[player] >= 1000:
-                return (next(die) - 1) * scores[player - 1]
+    for turn in count(0):
+        player = turn % 2
+        step(positions, scores, player, die)
+        if scores[player] >= 1000:
+            return (next(die) - 1) * scores[player - 1]
 
+ROLLS = {3: 1, 4: 3, 5: 6, 6: 7, 7: 6, 8: 3, 9: 1}
 
-UNIVERSES = [0, 0, 0, 1, 3, 6, 7, 6, 3, 1]
+@cache
+def quantum_turn(pos1, score1, pos2, score2):
+    wins, losses = 0, 0
+    for roll, freq in ROLLS.items():
+        new_pos1 = (pos1 + roll) % 10
+        new_score1 = score1 + new_pos1 + 1
+        if new_score1 >= 21:
+            wins += freq
+        else:
+            new_losses, new_wins = quantum_turn(pos2, score2, new_pos1, new_score1)
+            wins += freq * new_wins
+            losses += freq * new_losses
+    return wins, losses
 
 def part2(input):
-    boards = {}
-    boards[(input[0] - 1, input[1] - 1, 0, 0)] = 1
-
-    wins = [0, 0]
-    while boards:
-        # print(boards)
-        new_boards = defaultdict(int)
-        for board, uni_count in boards.items():
-            # print(board, uni_count)
-            pos1, pos2, score1, score2 = board
-            for rolls in range(3, 10):
-                new_pos1 = (pos1 + rolls) % 10
-                new_score1 = score1 + new_pos1 + 1
-                new_uni_count1 = uni_count * UNIVERSES[rolls]
-                if new_score1 >= 21:
-                    wins[0] += new_uni_count1
-                else:
-                    for rolls in range(3, 10):
-                        new_pos2 = (pos2 + rolls) % 10
-                        new_score2 = score2 + new_pos2 + 1
-                        new_uni_count2 = new_uni_count1 * UNIVERSES[rolls]
-                        if new_score2 >= 21:
-                            wins[1] += new_uni_count2
-                        else:
-                            # print(new_pos1, new_pos2, new_score1, new_score2)
-                            new_boards[(new_pos1, new_pos2, new_score1, new_score2)] += new_uni_count2
-
-        boards = new_boards
-        # print(boards)
-        # break
-
-    # print(wins)
-    return max(wins)
-
+    return max(quantum_turn(input[0] - 1, 0, input[1] - 1, 0))
 
 def readInput(filename):
     with open(filename) as f:
@@ -70,10 +50,8 @@ def solve(filename):
     input = readInput(inputFile)
 
     if input:
-        if filename == "example.txt":
-            input = (4, 8)
-        else:
-            input = (4, 10)
+        input = [int(line.split()[-1]) for line in input]
+
         print(f'Solving {filename}')
         print(f"    Part 1: {part1(input)}")
         print(f"    Part 2: {part2(input)}")
