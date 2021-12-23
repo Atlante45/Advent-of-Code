@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 from collections import defaultdict
 from enum import Enum
+from functools import cache
 import os
 
 def draw(hallway, rooms):
@@ -109,42 +110,25 @@ def possible_moves(hallway, rooms):
 
     return moves['A'] + moves['B'] + moves['C'] + moves['D']
 
-def recurse(hallway, rooms, min_cost, current_cost, moves):
-
-    # draw(hallway, rooms)
-    if current_cost >= min_cost:
-        return min_cost
-
-    if len(moves) > 25:
-        # print('Max recursion')
-        return min_cost
-
+@cache
+def recurse(hallway, rooma, roomb, roomc, roomd):
+    hallway = list(hallway)
+    rooms = {2: list(rooma), 4: list(roomb), 6: list(roomc), 8: list(roomd)}
     if solved(rooms):
-        # print('Found new solution', len(moves), current_cost)
-        # for m in reversed(moves):
-        #     unmove(hallway, rooms, m)
-        # draw(hallway, rooms)
-        # for m in moves:
-        #     c = move(hallway, rooms, m)
-        #     print(f'Move cost: {c}')
-        #     draw(hallway, rooms)
-        return current_cost
+        return 0
 
-    for m in possible_moves(hallway, rooms):
-        moves.append(m)
+    min_cost = 1000000000
+
+    for m in possible_moves(list(hallway), rooms):
         c = move(hallway, rooms, m)
-        new_min_cost = recurse(hallway, rooms, min_cost, current_cost + c, moves)
-        if new_min_cost < min_cost:
-            # print(f'New min cost: {new_min_cost} < {min_cost} -- {len(moves)}')
-            # draw(hallway, rooms)
-            min_cost = new_min_cost
+        new_min_cost = recurse(tuple(hallway), tuple(rooms[2]), tuple(rooms[4]), tuple(rooms[6]), tuple(rooms[8]))
+        min_cost = min(min_cost, c + new_min_cost)
         unmove(hallway, rooms, m)
-        moves.pop()
 
     return min_cost
 
 def part1(hallway, rooms):
-    return recurse(hallway, rooms, 100000000, 0, [])
+    return recurse(tuple(hallway), tuple(rooms[2]), tuple(rooms[4]), tuple(rooms[6]), tuple(rooms[8]))
 
 def part2(hallway, rooms):
     rooms[2] = [rooms[2][0], 'D', 'D', rooms[2][1]]
@@ -152,7 +136,7 @@ def part2(hallway, rooms):
     rooms[6] = [rooms[6][0], 'B', 'A', rooms[6][1]]
     rooms[8] = [rooms[8][0], 'A', 'C', rooms[8][1]]
 
-    return recurse(hallway, rooms, 100000000, 0, [])
+    return recurse(tuple(hallway), tuple(rooms[2]), tuple(rooms[4]), tuple(rooms[6]), tuple(rooms[8]))
 
 
 def readInput(filename):
