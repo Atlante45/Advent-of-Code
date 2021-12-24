@@ -1,48 +1,26 @@
 #!/usr/local/bin/python3
-from functools import cache
+from functools import reduce
 import os
 
-@cache
-def compute_substep(w, z, c):
-    x = w != (z % 26 + c[1])
-    y = 25 * x + 1
-    z = y * (z // c[0]) + (w + c[2]) * x
-    return z
+def compute_monad(constants, func):
+    monad = [None] * 14
+    stack = []
+    for j in range(14):
+        if constants[0][j] == 1:
+            stack.append(j)
+        else:
+            i = stack.pop()
+            monad[i], monad[j] = func(constants[2][i] + constants[1][j])
 
-constants = []
+    return reduce(lambda a, b: 10 * a + b, monad, 0)
 
-@cache
-def compute_step(z, step, inversed = True):
-    if step == 14:
-        return z == 0, ''
+def part1(constants):
+    maximize = lambda c: (9 - c, 9) if c > 0 else (9, 9 + c)
+    return compute_monad(constants, maximize)
 
-    global constants
-    c = constants[step]
-    r = range(1, 10)
-    if inversed:
-        r = reversed(r)
-    for i in r:
-        new_z = compute_substep(i, z, c)
-        if new_z < 0:
-            continue
-
-        valid, monad = compute_step(new_z, step + 1, inversed)
-        if valid:
-            return valid, str(i) + monad
-
-    return False, ''
-
-def part1():
-    valid, monad = compute_step(0, 0)
-    assert(valid)
-    return monad
-
-def part2():
-    valid, monad = compute_step(0, 0, False)
-    assert(valid)
-    return monad
-
-
+def part2(constants):
+    minimize = lambda c: (1, 1 + c) if c > 0 else (1 - c, 1)
+    return compute_monad(constants, minimize)
 
 def readInput(filename):
     with open(filename) as f:
@@ -55,14 +33,18 @@ def solve(filename):
     if input:
         input = [line.split() for line in input]
 
-        global constants
         constants = []
-        for i in range(14):
-            constants.append((int(input[18*i + 4][2]), int(input[18*i + 5][2]), int(input[18*i + 15][2])))
+        for offset in [4, 5, 15]:
+            constants.append([int(input[18 * i + offset][2]) for i in range(14)])
+
+        # assert(all(c0 in [1, 26] for c0 in constants[0]))
+        # assert(constants[0].count(1) == constants[0].count(26))
+        # assert(all(9 - c1 >= 0 and 9 - c1 < 26 for c0, c1, _ in zip(*constants) if c0 == 26))
+        # assert(all(9 + c2 >= 0 and 9 + c2 < 26 for c0, _, c2 in zip(*constants) if c0 == 1))
 
         print(f'Solving {filename}')
-        print(f"    Part 1: {part1()}")
-        print(f"    Part 2: {part2()}")
+        print(f"    Part 1: {part1(constants)}")
+        print(f"    Part 2: {part2(constants)}")
 
 def main():
     solve('example.txt')
