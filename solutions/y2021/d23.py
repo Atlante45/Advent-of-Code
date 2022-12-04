@@ -1,0 +1,206 @@
+from solutions.utils import logger
+from aocd import data
+
+from collections import defaultdict
+from functools import cache
+
+
+def draw(hallway, rooms):
+    hallway_d = "".join(x if x else "." for x in hallway)
+    rd = ["#".join(x if x else "." for x in r) for r in zip(*rooms.values())]
+    print("#############")
+    print(f"#{hallway_d}#")
+    print(f"###{rd[0]}###")
+    print(f"  #{rd[1]}#  ")
+    if len(rd) > 2:
+        print(f"  #{rd[2]}#  ")
+        print(f"  #{rd[3]}#  ")
+    print("  #########  ")
+
+
+HALLWAY_POSITIONS = [0, 1, 3, 5, 7, 9, 10]
+
+
+def move_cost(x):
+    if x == "A":
+        return 1
+    if x == "B":
+        return 10
+    if x == "C":
+        return 100
+    if x == "D":
+        return 1000
+
+    print(x)
+    raise "PANIC"
+
+
+def own_room(x):
+    if x == "A":
+        return 2
+    if x == "B":
+        return 4
+    if x == "C":
+        return 6
+    if x == "D":
+        return 8
+
+    print(x)
+    raise "PANIC"
+
+
+def room(hallway, rooms, r):
+    return hallway if r == 0 else rooms[r]
+
+
+def unmove(hallway, rooms, m):
+    s, d = m
+    move(hallway, rooms, (d, s))
+
+
+def move(hallway, rooms, m):
+    (a, b), (c, d) = m
+    room_a = room(hallway, rooms, a)
+    room_c = room(hallway, rooms, c)
+    room_a[b], room_c[d] = room_c[d], room_a[b]
+
+    cost = abs((d if c == 0 else c) - (b if a == 0 else a))
+    cost += b + 1 if a != 0 else 0
+    cost += d + 1 if c != 0 else 0
+    return cost * move_cost(room_c[d])
+
+
+def room_open(rooms, r):
+    return all(own_room(v) == r for v in rooms[r] if v)
+
+
+def path_clear(hallway, src, dst):
+    return not [a for a in hallway[min(src + 1, dst) : max(src, dst + 1)] if a]
+
+
+def solved(rooms):
+    for r, slots in rooms.items():
+        if any(not v or own_room(v) != r for v in slots):
+            return False
+    return True
+
+
+def possible_moves(hallway, rooms):
+    moves = defaultdict(list)
+
+    for i, x in enumerate(hallway):
+        if not x:
+            continue
+
+        src = 0, i
+        r = own_room(x)
+        if room_open(rooms, r) and path_clear(hallway, i, r):
+            slots = rooms[r]
+            slot = next((s for s, x in enumerate(slots) if x), len(slots)) - 1
+            return [(src, (r, slot))]
+
+    for i, slots in rooms.items():
+        s, x = next(((s, x) for s, x in enumerate(slots) if x), (None, None))
+        if not x:
+            continue
+
+        src = i, s
+        r = own_room(x)
+        if r == i and room_open(rooms, r):
+            continue
+
+        if room_open(rooms, r) and path_clear(hallway, i, r):
+            slots = rooms[r]
+            slot = next((s for s, x in enumerate(slots) if x), len(slots)) - 1
+            return [(src, (r, slot))]
+
+        for p in HALLWAY_POSITIONS:
+            if path_clear(hallway, i, p):
+                moves[x].append((src, (0, p)))
+
+    return moves["A"] + moves["B"] + moves["C"] + moves["D"]
+
+
+@cache
+def recurse(hallway, rooma, roomb, roomc, roomd):
+    hallway = list(hallway)
+    rooms = {2: list(rooma), 4: list(roomb), 6: list(roomc), 8: list(roomd)}
+    if solved(rooms):
+        return 0
+
+    min_cost = 1000000000
+
+    for m in possible_moves(list(hallway), rooms):
+        c = move(hallway, rooms, m)
+        new_min_cost = recurse(
+            tuple(hallway),
+            tuple(rooms[2]),
+            tuple(rooms[4]),
+            tuple(rooms[6]),
+            tuple(rooms[8]),
+        )
+        min_cost = min(min_cost, c + new_min_cost)
+        unmove(hallway, rooms, m)
+
+    return min_cost
+
+
+def part1(hallway, rooms):
+    return recurse(
+        tuple(hallway),
+        tuple(rooms[2]),
+        tuple(rooms[4]),
+        tuple(rooms[6]),
+        tuple(rooms[8]),
+    )
+
+
+def part2(hallway, rooms):
+    rooms[2] = [rooms[2][0], "D", "D", rooms[2][1]]
+    rooms[4] = [rooms[4][0], "C", "B", rooms[4][1]]
+    rooms[6] = [rooms[6][0], "B", "A", rooms[6][1]]
+    rooms[8] = [rooms[8][0], "A", "C", rooms[8][1]]
+
+    return recurse(
+        tuple(hallway),
+        tuple(rooms[2]),
+        tuple(rooms[4]),
+        tuple(rooms[6]),
+        tuple(rooms[8]),
+    )
+
+
+def solve(data, name="input", result=None, debug=False):
+    logger.debug_name(name, debug)
+
+    data = [line.strip() for line in data.splitlines()]
+    hallway = [None] * 11
+    rooms = {
+        2: [data[2][3], data[3][1]],
+        4: [data[2][5], data[3][3]],
+        6: [data[2][7], data[3][5]],
+        8: [data[2][9], data[3][7]],
+    }
+
+    ans_1 = part1(hallway, rooms)
+    logger.debug_part(0, ans_1, result, debug)
+
+    ans_2 = part2(hallway, rooms)
+    logger.debug_part(1, ans_2, result, debug)
+
+    return ans_1, ans_2
+
+
+INPUT_RESULT = (16300, 48676)
+TEST_RESULT = (12521, 44169)
+TEST_DATA = """\
+#############
+#...........#
+###B#C#B#D###
+  #A#D#C#A#
+  #########
+""".rstrip()
+
+if __name__ == "__main__":
+    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
+    solve(data, name="input", result=INPUT_RESULT, debug=True)

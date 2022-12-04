@@ -1,34 +1,37 @@
 from solutions.utils import logger
 from aocd import data
 
+from collections import deque
+
 
 def part1(input):
     res = 0
+    last = int(input[0])
 
-    cur = 0
     for line in input:
-        if line:
-            cur += int(line)
-        else:
-            res = max(res, cur)
-            cur = 0
+        cur = int(line)
+
+        if cur > last:
+            res += 1
+
+        last = cur
 
     return res
 
 
 def part2(input):
-    cals = []
-    cur = 0
-    for line in input:
-        if line:
-            cur += int(line)
-        else:
-            cals += [cur]
-            cur = 0
-    cals += [cur]
+    res = 0
+    vals = deque([])
 
-    cals = sorted(cals)
-    return sum(cals[-3:])
+    for line in input:
+        cur = int(line)
+
+        if len(vals) == 3 and cur > vals.popleft():
+            res += 1
+
+        vals.append(cur)
+
+    return res
 
 
 def solve(data, name="input", result=None, debug=False):
@@ -45,23 +48,19 @@ def solve(data, name="input", result=None, debug=False):
     return ans_1, ans_2
 
 
-INPUT_RESULT = (72511, 212117)
-TEST_RESULT = (24000, 45000)
+INPUT_RESULT = (1713, 1734)
+TEST_RESULT = (7, 5)
 TEST_DATA = """\
-1000
-2000
-3000
-
-4000
-
-5000
-6000
-
-7000
-8000
-9000
-
-10000
+199
+200
+208
+210
+200
+207
+240
+269
+260
+263
 """.rstrip()
 
 if __name__ == "__main__":

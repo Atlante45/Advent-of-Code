@@ -48,14 +48,14 @@ def solve(data, name="input", result=None, debug=False):
 
 INPUT_RESULT = (466, 865)
 TEST_RESULT = (2, 4)
-TEST_DATA = """
+TEST_DATA = """\
 2-4,6-8
 2-3,4-5
 5-7,7-9
 2-8,3-7
 6-6,4-6
 2-6,4-8
-""".strip()
+""".rstrip()
 
 if __name__ == "__main__":
     solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)

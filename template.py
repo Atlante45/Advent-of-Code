@@ -3,32 +3,11 @@ from aocd import data
 
 
 def part1(input):
-    res = 0
-
-    cur = 0
-    for line in input:
-        if line:
-            cur += int(line)
-        else:
-            res = max(res, cur)
-            cur = 0
-
-    return res
+    pass
 
 
 def part2(input):
-    cals = []
-    cur = 0
-    for line in input:
-        if line:
-            cur += int(line)
-        else:
-            cals += [cur]
-            cur = 0
-    cals += [cur]
-
-    cals = sorted(cals)
-    return sum(cals[-3:])
+    pass
 
 
 def solve(data, name="input", result=None, debug=False):
@@ -45,23 +24,9 @@ def solve(data, name="input", result=None, debug=False):
     return ans_1, ans_2
 
 
-INPUT_RESULT = (72511, 212117)
-TEST_RESULT = (24000, 45000)
+INPUT_RESULT = (None, None)
+TEST_RESULT = (None, None)
 TEST_DATA = """\
-1000
-2000
-3000
-
-4000
-
-5000
-6000
-
-7000
-8000
-9000
-
-10000
 """.rstrip()
 
 if __name__ == "__main__":

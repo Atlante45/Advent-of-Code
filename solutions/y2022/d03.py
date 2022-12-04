@@ -52,14 +52,14 @@ def solve(data, name="input", result=None, debug=False):
 
 INPUT_RESULT = (8139, 2668)
 TEST_RESULT = (157, 70)
-TEST_DATA = """
+TEST_DATA = """\
 vJrwpWtwJgWrhcsFMMfFFhFp
 jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
 PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw
-""".strip()
+""".rstrip()
 
 if __name__ == "__main__":
     solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)

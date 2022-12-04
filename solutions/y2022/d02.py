@@ -47,11 +47,11 @@ def solve(data, name="input", result=None, debug=False):
 
 INPUT_RESULT = (13675, 14184)
 TEST_RESULT = (15, 12)
-TEST_DATA = """
+TEST_DATA = """\
 A Y
 B X
 C Z
-""".strip()
+""".rstrip()
 
 if __name__ == "__main__":
     solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
