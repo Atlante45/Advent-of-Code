@@ -1,5 +1,5 @@
-#!/usr/local/bin/python3
-import os
+from solutions.utils import logger
+from aocd import data
 
 
 def contained(a, b):
@@ -15,7 +15,6 @@ def part1(input):
 
     for line in input:
         sections = [section.split("-") for section in line.split(",")]
-        # print(sections)
         if contained(sections[0], sections[1]) or contained(sections[1], sections[0]):
             res += 1
 
@@ -27,32 +26,37 @@ def part2(input):
 
     for line in input:
         sections = [section.split("-") for section in line.split(",")]
-        # print(sections)
         if overlap(sections[0], sections[1]) or overlap(sections[1], sections[0]):
             res += 1
 
     return res
 
 
-def readInput(filename):
-    with open(filename) as f:
-        return [line.strip() for line in f.readlines()]
+def solve(data, name="input", result=None, debug=False):
+    logger.debug_name(name, debug)
+
+    data = data.splitlines()
+
+    ans_1 = part1(data)
+    logger.debug_part(0, ans_1, result, debug)
+
+    ans_2 = part2(data)
+    logger.debug_part(1, ans_2, result, debug)
+
+    return ans_1, ans_2
 
 
-def solve(filename):
-    inputFile = os.path.join(os.path.dirname(__file__), filename)
-    input = readInput(inputFile)
-
-    if input:
-        print(f"Solving {filename}")
-        print(f"    Part 1: {part1(input)}")
-        print(f"    Part 2: {part2(input)}")
-
-
-def main():
-    solve("example.txt")
-    solve("input.txt")
-
+INPUT_RESULT = (466, 865)
+TEST_RESULT = (2, 4)
+TEST_DATA = """
+2-4,6-8
+2-3,4-5
+5-7,7-9
+2-8,3-7
+6-6,4-6
+2-6,4-8
+""".strip()
 
 if __name__ == "__main__":
-    main()
+    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
+    solve(data, name="input", result=INPUT_RESULT, debug=True)
