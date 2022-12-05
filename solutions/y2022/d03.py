@@ -1,39 +1,26 @@
+import string
+
+from more_itertools import chunked, divide
 from solutions.utils import logger
 from aocd import data
 
 
-def priority(item):
-    if item >= "a" and item <= "z":
-        return ord(item) - ord("a") + 1
-    else:
-        return ord(item) - ord("A") + 27
+def priority(group):
+    group = list(map(set, group))
+    item = group.pop().intersection(*group).pop()
+    return string.ascii_letters.index(item) + 1
+
+
+def compute(groups):
+    return sum(map(priority, groups))
 
 
 def part1(input):
-    res = 0
-
-    for line in input:
-        mid = len(line) // 2
-        first = line[:mid]
-        second = line[mid:]
-        for item in first:
-            if item in second:
-                res += priority(item)
-                break
-
-    return res
+    return compute([divide(2, line) for line in input])
 
 
 def part2(input):
-    res = 0
-
-    for i in range(len(input) // 3):
-        for c in input[3 * i]:
-            if c in input[3 * i + 1] and c in input[3 * i + 2]:
-                res += priority(c)
-                break
-
-    return res
+    return compute(chunked(input, 3))
 
 
 def solve(data, name="input", result=None, debug=False):
@@ -52,14 +39,14 @@ def solve(data, name="input", result=None, debug=False):
 
 INPUT_RESULT = (8139, 2668)
 TEST_RESULT = (157, 70)
-TEST_DATA = """\
+TEST_DATA = """
 vJrwpWtwJgWrhcsFMMfFFhFp
 jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
 PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw
-""".rstrip()
+""".strip()
 
 if __name__ == "__main__":
     solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)

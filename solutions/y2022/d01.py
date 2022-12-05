@@ -3,38 +3,17 @@ from aocd import data
 
 
 def part1(input):
-    res = 0
-
-    cur = 0
-    for line in input:
-        if line:
-            cur += int(line)
-        else:
-            res = max(res, cur)
-            cur = 0
-
-    return res
+    return max(input)
 
 
 def part2(input):
-    cals = []
-    cur = 0
-    for line in input:
-        if line:
-            cur += int(line)
-        else:
-            cals += [cur]
-            cur = 0
-    cals += [cur]
-
-    cals = sorted(cals)
-    return sum(cals[-3:])
+    return sum(sorted(input)[-3:])
 
 
 def solve(data, name="input", result=None, debug=False):
     logger.debug_name(name, debug)
 
-    data = data.splitlines()
+    data = [sum(map(int, chunk.splitlines())) for chunk in data.split("\n\n")]
 
     ans_1 = part1(data)
     logger.debug_part(0, ans_1, result, debug)

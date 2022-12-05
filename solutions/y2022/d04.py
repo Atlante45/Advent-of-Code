@@ -1,41 +1,43 @@
+import re
 from solutions.utils import logger
 from aocd import data
 
 
-def contained(a, b):
-    return int(a[0]) <= int(b[0]) and int(b[1]) <= int(a[1])
+def parse_line(line):
+    a, b, c, d = list(map(int, re.search(r"^(\d+)-(\d+),(\d+)-(\d+)", line).groups()))
+    return [(a, b), (c, d)]
 
 
-def overlap(a, b):
-    return int(a[0]) <= int(b[0]) and int(b[0]) <= int(a[1])
+def contained(sections):
+    s1, s2 = sections
+    low = max(s1[0], s2[0])
+    high = min(s1[1], s2[1])
+    return (low, high) == s1 or (low, high) == s2
+
+
+def overlap(sections):
+    s1, s2 = sections
+    low = max(s1[0], s2[0])
+    high = min(s1[1], s2[1])
+    return low <= high
+
+
+def compute(sections, func):
+    return len(list(filter(func, sections)))
 
 
 def part1(input):
-    res = 0
-
-    for line in input:
-        sections = [section.split("-") for section in line.split(",")]
-        if contained(sections[0], sections[1]) or contained(sections[1], sections[0]):
-            res += 1
-
-    return res
+    return compute(input, contained)
 
 
 def part2(input):
-    res = 0
-
-    for line in input:
-        sections = [section.split("-") for section in line.split(",")]
-        if overlap(sections[0], sections[1]) or overlap(sections[1], sections[0]):
-            res += 1
-
-    return res
+    return compute(input, overlap)
 
 
 def solve(data, name="input", result=None, debug=False):
     logger.debug_name(name, debug)
 
-    data = data.splitlines()
+    data = [parse_line(line) for line in data.splitlines()]
 
     ans_1 = part1(data)
     logger.debug_part(0, ans_1, result, debug)

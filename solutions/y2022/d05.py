@@ -10,7 +10,7 @@ def move_crates(crates, moves, move_func):
     stacks = list(map(lambda s: list(reversed(list(filter(isalpha, s)))), stacks))
 
     for move in moves:
-        groups = re.search(r"^move (.*) from (.*) to (.*)", move).groups()
+        groups = re.search(r"^move (\d+) from (\d+) to (\d+)", move).groups()
         count, from_s, to_s = list(map(int, groups))
 
         stacks[to_s - 1] += move_func(stacks[from_s - 1][-count:])
