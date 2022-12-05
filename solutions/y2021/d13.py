@@ -3,11 +3,13 @@ from aocd import data
 
 
 def render(holes):
-    maximum = max(holes)
+    xs, ys = list(zip(*holes))
+    max_x = max(xs)
+    max_y = max(ys)
 
     render = ""
-    for y in range(maximum[1] + 1):
-        for x in range(maximum[0] + 1):
+    for y in range(max_y + 1):
+        for x in range(max_x + 1):
             render += "#" if (x, y) in holes else "."
         render += "\n"
 
@@ -17,12 +19,16 @@ def render(holes):
 def fold(holes, axis, val):
     folded = set()
     for hole in holes:
-        if axis == "x" and hole[0] > val:
-            folded.add((val - (hole[0] - val), hole[1]))
-        elif axis == "y" and hole[1] > val:
-            folded.add((hole[0], val - (hole[1] - val)))
-        else:
-            folded.add(hole)
+        if axis == "x":
+            if hole[0] > val:
+                folded.add((val - (hole[0] - val), hole[1]))
+            elif hole[0] != val:
+                folded.add(hole)
+        elif axis == "y":
+            if hole[1] > val:
+                folded.add((hole[0], val - (hole[1] - val)))
+            elif hole[1] != val:
+                folded.add(hole)
 
     return list(folded)
 
