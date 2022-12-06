@@ -27,6 +27,7 @@ def solve(data, name="input", result=None, debug=False):
 INPUT_RESULT = (None, None)
 TEST_RESULT = (None, None)
 TEST_DATA = """\
+
 """.rstrip()
 
 if __name__ == "__main__":
