@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 from curses.ascii import isalpha
+
 from solutions.utils import logger
 from aocd import data
 

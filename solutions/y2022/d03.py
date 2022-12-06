@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
 import string
 
 from more_itertools import chunked, divide
+
 from solutions.utils import logger
 from aocd import data
 

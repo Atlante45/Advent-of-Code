@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 import re
+
 from solutions.utils import logger
 from aocd import data
 

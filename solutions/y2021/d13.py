@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from solutions.utils import logger, ocr
 from aocd import data
 

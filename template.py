@@ -1,12 +1,13 @@
+#!/usr/bin/env python3
 from solutions.utils import logger
 from aocd import data
 
 
-def part1(input):
+def part1(data):
     pass
 
 
-def part2(input):
+def part2(data):
     pass
 
 

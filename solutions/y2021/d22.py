@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from solutions.utils import logger
 from aocd import data
 
@@ -6,10 +7,6 @@ import math
 import re
 
 SIZE = 100
-
-
-def prod3(a, b, c):
-    return ([x, y, z] for (x, y), z in itertools.product(itertools.product(a, b), c))
 
 
 def make_cube(start, end):
@@ -30,7 +27,7 @@ class Cube:
     def __init__(self, start, end):
         self.start = [min(a, b) for a, b in zip(start, end)]
         self.end = [max(a, b) for a, b in zip(start, end)]
-        self.corners = list(prod3(*zip(start, end)))
+        self.corners = list(itertools.product(*zip(start, end)))
 
     def __eq__(self, other):
         return (
