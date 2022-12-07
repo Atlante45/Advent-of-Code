@@ -1,105 +1,48 @@
 #!/usr/bin/env python3
+from collections import defaultdict
+import os
+
 from solutions.utils import logger
 from aocd import data
 
 
-def add_file(root, path, file, size):
-    if not path:
-        root[file] = size
-        return
-    if path[0] not in root:
-        root[path[0]] = {}
-
-    add_file(root[path[0]], path[1:], file, size)
+def add_file(directories, path, size):
+    cwd = ""
+    for dir in path:
+        cwd = os.path.join(cwd, dir)
+        directories[cwd] += size
 
 
-def du(root):
-    size = 0
-    total = 0
-    for k, v in root.items():
-        if isinstance(v, dict):
-            s, t = du(v)
-            size += s
-            total += t
+def parse_directories(data):
+    directories = defaultdict(int)
+
+    path = ["/"]
+    for line in data:
+        if line == "$ ls" or line.startswith("dir"):
+            continue
+
+        if line == "$ cd /":
+            path = ["/"]
+        elif line == "$ cd ..":
+            path.pop()
+        elif line.startswith("$ cd"):
+            path.append(line.split()[-1])
         else:
-            size += v
-    if size < 100000:
-        total += size
-    return size, total
+            add_file(directories, path, int(line.split()[0]))
 
-
-def find(root, needed):
-    size = 0
-    cur_min = 1000000000000000000000000
-    for k, v in root.items():
-        if isinstance(v, dict):
-            s, v_min = find(v, needed)
-            cur_min = min(v_min, cur_min)
-            size += s
-        else:
-            size += v
-
-    if size >= needed:
-        cur_min = min(size, cur_min)
-    return size, cur_min
+    return directories
 
 
 def part1(data):
-    root = {}
-    path = []
-    for line in data:
-        items = line.split()
-        # print("line", items)
-        # print(path)
-        # print(root)
-        if items[0] == "$":
-            if items[1] == "cd":
-                if items[2] == "/":
-                    path = []
-                    continue
-                elif items[2] == "..":
-                    path.pop()
-                else:
-                    path.append(items[2])
-        else:
-            if items[0] != "dir":
-                add_file(root, path, items[1], int(items[0]))
-
-    # print(root)
-    # print()
-    _, total = du(root)
-
-    return total
+    directories = parse_directories(data)
+    return sum(size for size in directories.values() if size < 100000)
 
 
 def part2(data):
-    root = {}
-    path = []
-    for line in data:
-        items = line.split()
-        # print("line", items)
-        # print(path)
-        # print(root)
-        if items[0] == "$":
-            if items[1] == "cd":
-                if items[2] == "/":
-                    path = []
-                    continue
-                elif items[2] == "..":
-                    path.pop()
-                else:
-                    path.append(items[2])
-        else:
-            if items[0] != "dir":
-                add_file(root, path, items[1], int(items[0]))
-
-    # print(root)
-    # print()
-    size, total = du(root)
-    available = 70000000 - size
+    directories = parse_directories(data)
+    available = 70000000 - directories["/"]
     needed = 30000000 - available
-    _, res = find(root, needed)
-    return res
+    return min(size for size in directories.values() if size >= needed)
 
 
 def solve(data, name="input", result=None, debug=False):
@@ -116,7 +59,7 @@ def solve(data, name="input", result=None, debug=False):
     return ans_1, ans_2
 
 
-INPUT_RESULT = (None, None)
+INPUT_RESULT = (1844187, 4978279)
 TEST_RESULT = (95437, 24933642)
 TEST_DATA = """\
 $ cd /
