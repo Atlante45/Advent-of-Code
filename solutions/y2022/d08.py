@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from itertools import chain, product
-import time
 from more_itertools import first, split_after
 from math import prod
 
@@ -38,11 +37,11 @@ def part1(data):
     res += sum(is_visible(trees, i, j) for i, j in indices)
     return res
 
+
 def part2(data):
     trees = list(list(map(int, list(line))) for line in data)
     indices = product(range(1, len(data) - 1), range(1, len(data[0]) - 1))
     return max(score(trees, i, j) for i, j in indices)
-
 
 
 def solve(data, name="input", result=None, debug=False):
