@@ -26,12 +26,14 @@ HEIGHT = 6
 
 
 def parse(drawing):
-    lines = drawing.splitlines()
+    lines = drawing.strip().splitlines()
     if len(lines) != HEIGHT:
-        return None
+        print("Error: invalid height")
+        return -1
     length = len(lines[0])
     if not all(map(lambda line: len(line) == length, lines)):
-        return None
+        print("Error: inconsistant width")
+        return -2
 
     result = ""
 
@@ -42,6 +44,11 @@ def parse(drawing):
             index += 1
             continue
         letter = "\n".join(map(lambda line: line[index : index + WIDTH], lines))
+
+        if letter not in ALPHABET:
+            print("Error: unknown letter:\n", letter)
+            return -3
+
         letter = ALPHABET[letter]
 
         result += letter
