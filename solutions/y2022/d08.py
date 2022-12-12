@@ -7,26 +7,25 @@ from solutions.utils import logger
 from aocd import data
 
 
-def outward(i, n, func):
-    return [map(func, reversed(range(i))), map(func, range(i + 1, n))]
+def ranges(trees, a, b):
+    def outward(i, n, func):
+        return [map(func, reversed(range(i))), map(func, range(i + 1, n))]
+
+    return chain(
+        outward(a, len(trees), lambda i: trees[i][b]),
+        outward(b, len(trees[a]), lambda j: trees[a][j]),
+    )
 
 
 def is_visible(trees, a, b):
-    ranges = chain(
-        outward(a, len(trees), lambda i: trees[i][b]),
-        outward(b, len(trees[a]), lambda j: trees[a][j]),
-    )
-    return any(map(lambda range: max(range) < trees[a][b], ranges))
+    return any(map(lambda range: max(range) < trees[a][b], ranges(trees, a, b)))
 
 
 def score(trees, a, b):
-    ranges = chain(
-        outward(a, len(trees), lambda i: trees[i][b]),
-        outward(b, len(trees[a]), lambda j: trees[a][j]),
-    )
-    return prod(
-        len(first(split_after(range, lambda x: x >= trees[a][b]))) for range in ranges
-    )
+    def view_dist(range):
+        return len(first(split_after(range, lambda x: x >= trees[a][b])))
+
+    return prod(view_dist(range) for range in ranges(trees, a, b))
 
 
 def part1(data):
