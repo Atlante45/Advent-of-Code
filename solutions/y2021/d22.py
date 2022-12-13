@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 import itertools
 import math
 import re
@@ -118,6 +114,18 @@ def get_coords(start, end):
         return []
 
 
+def parse(data):
+    commands = []
+    for line in data.splitlines():
+        groups = re.search(
+            r"^(on|off) x=(.*)\.\.(.*),y=(.*)\.\.(.*),z=(.*)\.\.(.*)", line
+        ).groups()
+        start = [int(groups[v]) for v in [1, 3, 5]]
+        end = [int(groups[v]) for v in [2, 4, 6]]
+        commands.append((groups[0], start, end))
+    return commands
+
+
 def part1(commands):
     cubes = [0] * SIZE**3
 
@@ -146,30 +154,9 @@ def part2(commands):
     return int(sum([c.count() for c in cubes]))
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    commands = []
-    for line in data.splitlines():
-        groups = re.search(
-            r"^(on|off) x=(.*)\.\.(.*),y=(.*)\.\.(.*),z=(.*)\.\.(.*)", line
-        ).groups()
-        start = [int(groups[v]) for v in [1, 3, 5]]
-        end = [int(groups[v]) for v in [2, 4, 6]]
-        commands.append((groups[0], start, end))
-
-    ans_1 = part1(commands)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(commands)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (547648, 1206644425246111)
-TEST_RESULT = (590784, None)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 on x=-20..26,y=-36..17,z=-47..7
 on x=-20..33,y=-21..23,z=-26..28
 on x=-22..28,y=-29..23,z=-38..16
@@ -193,7 +180,4 @@ on x=-41..9,y=-7..43,z=-33..15
 on x=-54112..-39298,y=-85059..-49293,z=-27449..7877
 on x=967..23432,y=45373..81175,z=27513..53682
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (590784, None)

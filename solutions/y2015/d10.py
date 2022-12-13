@@ -22,7 +22,3 @@ def parts(data):
 
 
 TEST_DATA = {}
-TEST_DATA[
-    """\
-""".rstrip()
-] = (None, None)

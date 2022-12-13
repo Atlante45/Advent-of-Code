@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
-
 def get_coords(i, j):
     return [
         (i - 1, j - 1),
@@ -54,6 +49,13 @@ def count_light(input_image):
     return sum([line.count("#") for line in input_image])
 
 
+def parse(data):
+    data = data.splitlines()
+    alg = data[0]
+    input_image = data[2:]
+    return input_image, alg
+
+
 def part1(input_image, alg):
     enhanced = enhance_n(input_image, alg, 2)
     return count_light(enhanced)
@@ -64,25 +66,9 @@ def part2(input_image, alg):
     return count_light(enhanced)
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-    alg = data[0]
-    input_image = data[2:]
-
-    ans_1 = part1(input_image, alg)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(input_image, alg)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (5057, 18502)
-TEST_RESULT = (35, 3351)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 ..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..###..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###.######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#..#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#......#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#.....####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#.......##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#
 
 #..#.
@@ -91,7 +77,4 @@ TEST_DATA = """\
 ..#..
 ..###
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (35, 3351)

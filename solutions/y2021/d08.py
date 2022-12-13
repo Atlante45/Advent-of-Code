@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
-
 # segments = {
 #     1: "cf",
 #     7: "acf",
@@ -20,6 +15,10 @@ from aocd import data
 def sub(lst1, lst2):
     lst3 = [value for value in lst1 if value not in lst2]
     return lst3
+
+
+def parse(data):
+    return data.splitlines()
 
 
 def part1(input):
@@ -76,23 +75,9 @@ def part2(input):
     return total
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (488, 1040429)
-TEST_RESULT = (26, 61229)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
 fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
@@ -104,7 +89,4 @@ bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbg
 egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
 gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (26, 61229)

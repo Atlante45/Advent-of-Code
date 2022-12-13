@@ -67,7 +67,3 @@ def part2(input):
 
 
 TEST_DATA = {}
-TEST_DATA[
-    """\
-""".rstrip()
-] = (None, None)

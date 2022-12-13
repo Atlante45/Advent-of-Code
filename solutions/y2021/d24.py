@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 from functools import reduce
 
 
@@ -18,19 +14,7 @@ def compute_monad(constants, func):
     return reduce(lambda a, b: 10 * a + b, monad, 0)
 
 
-def part1(constants):
-    maximize = lambda c: (9 - c, 9) if c > 0 else (9, 9 + c)
-    return compute_monad(constants, maximize)
-
-
-def part2(constants):
-    minimize = lambda c: (1, 1 + c) if c > 0 else (1 - c, 1)
-    return compute_monad(constants, minimize)
-
-
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
+def parse(data):
     data = [line.split() for line in data.splitlines()]
 
     constants = []
@@ -41,21 +25,17 @@ def solve(data, name="input", result=None, debug=False):
     # assert(constants[0].count(1) == constants[0].count(26))
     # assert(all(9 - c1 >= 0 and 9 - c1 < 26 for c0, c1, _ in zip(*constants) if c0 == 26))
     # assert(all(9 + c2 >= 0 and 9 + c2 < 26 for c0, _, c2 in zip(*constants) if c0 == 1))
-
-    ans_1 = part1(constants)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(constants)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
+    return constants
 
 
-INPUT_RESULT = (99429795993929, 18113181571611)
-TEST_RESULT = (None, None)
-TEST_DATA = """\
-""".rstrip()
+def part1(constants):
+    maximize = lambda c: (9 - c, 9) if c > 0 else (9, 9 + c)
+    return compute_monad(constants, maximize)
 
-if __name__ == "__main__":
-    # solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+
+def part2(constants):
+    minimize = lambda c: (1, 1 + c) if c > 0 else (1 - c, 1)
+    return compute_monad(constants, minimize)
+
+
+TEST_DATA = {}

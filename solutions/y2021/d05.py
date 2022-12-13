@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 import re
 
 
@@ -67,6 +63,10 @@ def countVents(lines, straightLinesOnly):
     return count
 
 
+def parse(data):
+    return data.splitlines()
+
+
 def part1(lines):
     return countVents(lines, True)
 
@@ -75,23 +75,9 @@ def part2(lines):
     return countVents(lines, False)
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (4421, 18674)
-TEST_RESULT = (5, 12)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 0,9 -> 5,9
 8,0 -> 0,8
 9,4 -> 3,4
@@ -103,7 +89,4 @@ TEST_DATA = """\
 0,0 -> 8,8
 5,5 -> 8,2
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (5, 12)

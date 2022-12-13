@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
-
 class BingoCard:
     def __init__(self, lines):
         self.grid = []
@@ -38,7 +33,8 @@ class BingoCard:
         return False
 
 
-def parse_input(lines):
+def parse(data):
+    lines = data.splitlines()
     numbers = lines[0].strip().split(",")
     numbers = list(map(lambda v: int(v), numbers))
     lines = lines[2:]
@@ -49,12 +45,10 @@ def parse_input(lines):
         cards.append(BingoCard(lines[0:5]))
         lines = lines[6:]
 
-    return (numbers, cards)
+    return numbers, cards
 
 
-def part1(lines):
-    (numbers, cards) = parse_input(lines)
-
+def part1(numbers, cards):
     res = 0
 
     for n in numbers:
@@ -69,9 +63,7 @@ def part1(lines):
     return res
 
 
-def part2(lines):
-    (numbers, cards) = parse_input(lines)
-
+def part2(numbers, cards):
     res = 0
 
     cardsLeft = len(cards)
@@ -91,23 +83,9 @@ def part2(lines):
     return res
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (71708, 34726)
-TEST_RESULT = (4512, 1924)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
@@ -128,7 +106,4 @@ TEST_DATA = """\
 22 11 13  6  5
  2  0 12  3  7
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (4512, 1924)

@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 import copy
+
+
+def parse(data):
+    return [list(line) for line in data.splitlines()]
 
 
 def part1(input):
@@ -41,23 +41,9 @@ def part2(input):
     pass
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = [list(line) for line in data.splitlines()]
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (419, None)
-TEST_RESULT = (58, None)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 v...>>.vv>
 .vv>>.vv..
 >>.>v>...v
@@ -68,7 +54,4 @@ v>v.vv.v..
 v.v..>>v.v
 ....v..v.>
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (58, None)

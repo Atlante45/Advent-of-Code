@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 from queue import PriorityQueue
 
 
@@ -54,6 +50,13 @@ def a_star_search(start, goal, neighbors, cost):
     return came_from, cost_so_far
 
 
+def parse(data):
+    input = []
+    for line in data.splitlines():
+        input.append([int(v) for v in line.strip()])
+    return input
+
+
 def part1(input):
     size = len(input)
     start = (0, 0)
@@ -88,25 +91,9 @@ def part2(input):
     return cost_so_far[end]
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    input = []
-    for line in data.splitlines():
-        input.append([int(v) for v in line.strip()])
-
-    ans_1 = part1(input)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(input)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (811, 3012)
-TEST_RESULT = (40, 315)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 1163751742
 1381373672
 2136511328
@@ -118,7 +105,4 @@ TEST_DATA = """\
 1293138521
 2311944581
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (40, 315)

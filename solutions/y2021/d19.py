@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 from collections import defaultdict
 import math
 import re
@@ -18,6 +14,27 @@ def sub(a, b):
 
 def add(a, b):
     return [a_i + b_i for a_i, b_i in zip(a, b)]
+
+
+def readScanner(input):
+    scanner = re.search("^--- scanner ([0-9]*) ---", input.pop(0)).group(1)
+    beacons = []
+
+    line = input.pop(0).strip()
+    while line:
+        beacons.append([int(v) for v in line.strip().split(",")])
+        line = input.pop(0).strip() if input else ""
+
+    return scanner, beacons
+
+
+def parse(data):
+    input = data.splitlines()
+    scanners = {}
+    while input:
+        s, b = readScanner(input)
+        scanners[s] = b
+    return scanners
 
 
 def parts(scanners):
@@ -117,37 +134,9 @@ def parts(scanners):
     return len(beacons), maxDist
 
 
-def readScanner(input):
-    scanner = re.search("^--- scanner ([0-9]*) ---", input.pop(0)).group(1)
-    beacons = []
-
-    line = input.pop(0).strip()
-    while line:
-        beacons.append([int(v) for v in line.strip().split(",")])
-        line = input.pop(0).strip() if input else ""
-
-    return scanner, beacons
-
-
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    input = data.splitlines()
-    scanners = {}
-    while input:
-        s, b = readScanner(input)
-        scanners[s] = b
-
-    ans_1, ans_2 = parts(scanners)
-    logger.debug_part(0, ans_1, result, debug)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (315, 13192)
-TEST_RESULT = (79, 3621)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 --- scanner 0 ---
 404,-588,-901
 528,-643,409
@@ -285,7 +274,4 @@ TEST_DATA = """\
 -652,-548,-490
 30,-46,-14
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (79, 3621)

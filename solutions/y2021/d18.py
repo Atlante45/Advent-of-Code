@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 import math
 
 
@@ -39,7 +35,7 @@ def parseNum(line, parent=None):
     return node, line[1:]
 
 
-def parse(line):
+def parseLine(line):
     num, _ = parseNum(line)
     return num
 
@@ -133,12 +129,17 @@ def mag(num):
 
 def maxMag(line1, line2):
     return max(
-        mag(add(parse(line1), parse(line2))), mag(add(parse(line2), parse(line1)))
+        mag(add(parseLine(line1), parseLine(line2))),
+        mag(add(parseLine(line2), parseLine(line1))),
     )
 
 
+def parse(data):
+    return data.splitlines()
+
+
 def part1(input):
-    nums = [parse(line.strip()) for line in input]
+    nums = [parseLine(line.strip()) for line in input]
 
     sum = nums[0]
     for i in range(1, len(nums)):
@@ -157,23 +158,9 @@ def part2(input):
     return res
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (3494, 4712)
-TEST_RESULT = (4140, 3993)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
 [[[5,[2,8]],4],[5,[[9,9],0]]]
 [6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
@@ -185,7 +172,4 @@ TEST_DATA = """\
 [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
 [[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (4140, 3993)

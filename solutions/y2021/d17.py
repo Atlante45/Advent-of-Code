@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 import math
 import re
 
@@ -80,6 +76,16 @@ def xhit_range(vel, target):
     return []
 
 
+def parse(data):
+    minx, maxx, miny, maxy = re.search(
+        r"^target area: x=(.+)\.\.(.+), y=(.+)\.\.(.+)", data.strip()
+    ).groups()
+    x_range = (int(minx), int(maxx))
+    y_range = (int(miny), int(maxy))
+
+    return x_range, y_range
+
+
 def part1(_, y_range):
     v = max_yvel(y_range)
     return v * (v + 1) // 2
@@ -99,30 +105,9 @@ def part2(x_range, y_range):
     return count
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    minx, maxx, miny, maxy = re.search(
-        r"^target area: x=(.+)\.\.(.+), y=(.+)\.\.(.+)", data.strip()
-    ).groups()
-    x_range = (int(minx), int(maxx))
-    y_range = (int(miny), int(maxy))
-
-    ans_1 = part1(x_range, y_range)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(x_range, y_range)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (7750, 4120)
-TEST_RESULT = (45, 112)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 target area: x=20..30, y=-10..-5
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (45, 112)

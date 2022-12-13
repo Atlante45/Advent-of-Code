@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
-
 def lineToArray(line):
     return list(map(lambda c: int(c), list(line.strip())))
+
+
+def parse(data):
+    return data.splitlines()
 
 
 def part1(lines):
@@ -52,23 +51,9 @@ def part2(lines):
     return oxRating * co2Rating
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (4174964, 4474944)
-TEST_RESULT = (198, 230)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 00100
 11110
 10110
@@ -82,7 +67,4 @@ TEST_DATA = """\
 00010
 01010
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (198, 230)

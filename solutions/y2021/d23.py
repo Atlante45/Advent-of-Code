@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 from collections import defaultdict
 from functools import cache
 
@@ -146,6 +142,18 @@ def recurse(hallway, rooma, roomb, roomc, roomd):
     return min_cost
 
 
+def parse(data):
+    data = [line.strip() for line in data.splitlines()]
+    hallway = [None] * 11
+    rooms = {
+        2: [data[2][3], data[3][1]],
+        4: [data[2][5], data[3][3]],
+        6: [data[2][7], data[3][5]],
+        8: [data[2][9], data[3][7]],
+    }
+    return hallway, rooms
+
+
 def part1(hallway, rooms):
     return recurse(
         tuple(hallway),
@@ -171,37 +179,13 @@ def part2(hallway, rooms):
     )
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = [line.strip() for line in data.splitlines()]
-    hallway = [None] * 11
-    rooms = {
-        2: [data[2][3], data[3][1]],
-        4: [data[2][5], data[3][3]],
-        6: [data[2][7], data[3][5]],
-        8: [data[2][9], data[3][7]],
-    }
-
-    ans_1 = part1(hallway, rooms)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(hallway, rooms)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (16300, 48676)
-TEST_RESULT = (12521, 44169)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 #############
 #...........#
 ###B#C#B#D###
   #A#D#C#A#
   #########
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (12521, 44169)

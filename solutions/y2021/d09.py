@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
-
 def findNeighbors(heighmap, i, j):
     neighbors = []
     height = len(heighmap)
@@ -46,6 +41,13 @@ def computeBasin(heighmap, i, j):
     return res
 
 
+def parse(data):
+    heighmap = []
+    for line in data.splitlines():
+        heighmap.append([int(v) for v in line.strip()])
+    return heighmap
+
+
 def part1(heighmap):
     res = 0
 
@@ -65,32 +67,13 @@ def part2(heighmap):
     return basins[-3] * basins[-2] * basins[-1]
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    heighmap = []
-    for line in data.splitlines():
-        heighmap.append([int(v) for v in line.strip()])
-
-    ans_1 = part1(heighmap)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(heighmap)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (514, 1103130)
-TEST_RESULT = (15, 1134)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 2199943210
 3987894921
 9856789892
 8767896789
 9899965678
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (15, 1134)

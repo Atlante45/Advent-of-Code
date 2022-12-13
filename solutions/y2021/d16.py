@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 import math
 
 versions = []
@@ -80,6 +76,10 @@ def readLiteral(bits):
     return (i + 5, number)
 
 
+def parse(data):
+    return data.strip()
+
+
 def part1(input):
     versions.clear()
 
@@ -99,26 +99,9 @@ def part2(input):
     return res
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.strip()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (893, 4358595186090)
-TEST_RESULT = (None, 1)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 9C0141080250320F1802104A08
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (None, 1)
