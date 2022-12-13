@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
 from itertools import groupby
 from more_itertools import triplewise
-from solutions.utils import logger
-from aocd import data
 
 
 def is_valid(passw):
@@ -62,26 +59,19 @@ def next_valid(passw):
     return "".join(passw)
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
+def parse(data):
+    return data.strip()
 
-    data = data.strip()
 
+def parts(data):
     ans_1 = next_valid(data)
-    logger.debug_part(0, ans_1, result, debug)
-
     ans_2 = next_valid(ans_1)
-    logger.debug_part(1, ans_2, result, debug)
-
     return ans_1, ans_2
 
 
-INPUT_RESULT = ("cqjxxyzz", "cqkaabcc")
-TEST_RESULT = ("ghjaabcc", "ghjbbcdd")
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 ghijklmn
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = ("ghjaabcc", "ghjbbcdd")

@@ -44,20 +44,19 @@ def get_answers(puzzle):
 def main(year, day, do_test, verbose):
     logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
-    for day in range(1, 14):
-        mod_name = f"solutions.y{year}.d{day:02d}"
-        module = importlib.import_module(mod_name)
-        puzzle = Puzzle(year, day)
+    mod_name = f"solutions.y{year}.d{day:02d}"
+    module = importlib.import_module(mod_name)
+    puzzle = Puzzle(year, day)
 
-        logger.info(f"{year}/{day} {puzzle.title}")
+    logger.info(f"{year}/{day} {puzzle.title}")
 
-        if not do_test or test(module):
-            logger.info("input:")
-            ans_1, ans_2, time_1, time_2 = solve(module, puzzle.input_data)
+    if not do_test or test(module):
+        logger.info("input:")
+        ans_1, ans_2, time_1, time_2 = solve(module, puzzle.input_data)
 
-            answers = get_answers(puzzle)
-            print_answer(0, ans_1, answers[0], time_1)
-            print_answer(1, ans_2, answers[1], time_2)
+        answers = get_answers(puzzle)
+        print_answer(0, ans_1, answers[0], time_1)
+        print_answer(1, ans_2, answers[1], time_2)
 
 
 if __name__ == "__main__":

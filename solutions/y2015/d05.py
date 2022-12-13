@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 VOWELS = "aeiou"
 BAD = ["ab", "cd", "pq", "xy"]
+
+
+def parse(data):
+    return data.splitlines()
 
 
 def part1(input):
@@ -36,26 +36,13 @@ def part2(input):
     return res
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (238, 69)
-TEST_RESULT = (2, 0)
-TEST_DATA = """\
-turn on 1,10 through 5,15
+TEST_DATA = {}
+TEST_DATA[
+    """\
+ugknbfddgicrmopn
+aaa
+jchzalrnumimnmhp
+haegwjzuvuyypxyu
+dvszwmarrgswjxmb
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (2, 0)

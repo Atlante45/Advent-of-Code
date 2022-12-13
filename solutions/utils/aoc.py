@@ -68,7 +68,7 @@ def print_answer(part, answer, expected, time=None):
             suffix = " ✅"
         else:
             suffix = f" ❌ (expected {expected})"
-    if time:
-        timing = f"{time:.3f}s".rjust(8)
 
-    logger.info(f"    Part {part + 1}: {answer.rjust(20)}{suffix.ljust(20)} {timing}")
+    timing = f" {time:.3f}s".rjust(8) if time else ""
+
+    logger.info(f"    Part {part + 1}: {answer.rjust(20)}{suffix.ljust(20)}{timing}")

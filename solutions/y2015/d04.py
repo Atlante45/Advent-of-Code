@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 import hashlib
 from itertools import count
 
@@ -13,34 +9,19 @@ def find(input, prefix, start):
             return i
 
 
-def part1(input, start):
-    return find(input, "00000", start)
+def parse(data):
+    return data.strip()
 
 
-def part2(input, start):
-    return find(input, "000000", start)
-
-
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.strip()
-
-    ans_1 = part1(data, 1)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data, ans_1)
-    logger.debug_part(1, ans_2, result, debug)
-
+def parts(data):
+    ans_1 = find(data, "00000", 1)
+    ans_2 = find(data, "000000", ans_1)
     return ans_1, ans_2
 
 
-INPUT_RESULT = (254575, 1038736)
-TEST_RESULT = (609043, 6742839)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 abcdef
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (609043, 6742839)

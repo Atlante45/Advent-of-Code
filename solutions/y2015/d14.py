@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
 from collections import defaultdict
-from solutions.utils import logger
-from aocd import data
+
 
 import re
 
@@ -15,6 +13,17 @@ def distance(speed, t1, t2, duration):
 
 def step(speed, t1, t2, t):
     return speed if t % (t1 + t2) < t1 else 0
+
+
+def parse(data):
+    deers = {}
+    for line in data.splitlines():
+        deer, speed, t1, t2 = re.search(REGEX, line).groups()
+        deers[deer] = (int(speed), int(t1), int(t2))
+
+    DURATION = 2503 if len(deers) > 2 else 1000
+
+    return deers, DURATION
 
 
 def part1(deers, duration):
@@ -38,34 +47,10 @@ def part2(deers, duration):
     return max(points.values())
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    DURATION = 2503 if name == "input" else 1000
-
-    deers = {}
-    for line in data:
-        deer, speed, t1, t2 = re.search(REGEX, line).groups()
-        deers[deer] = (int(speed), int(t1), int(t2))
-
-    ans_1 = part1(deers, DURATION)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(deers, DURATION)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (2660, 1256)
-TEST_RESULT = (1120, 689)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
 Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (1120, 689)

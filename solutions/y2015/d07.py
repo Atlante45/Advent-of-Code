@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 from functools import cache
 
 mapping = None
@@ -45,6 +41,16 @@ def value_for(x):
     return res
 
 
+def parse(data):
+    global mapping
+    mapping = {}
+    for line in data.splitlines():
+        a, b = line.split("->")
+        mapping[b.strip()] = a.strip()
+
+    return mapping
+
+
 def part1(input):
     return value_for("a")
 
@@ -60,31 +66,8 @@ def part2(input):
     return value_for("a")
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    global mapping
-    mapping = {}
-    for line in data:
-        a, b = line.split("->")
-        mapping[b.strip()] = a.strip()
-
-    ans_1 = part1(mapping)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(mapping)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (46065, 14134)
-TEST_RESULT = (None, None)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 """.rstrip()
-
-if __name__ == "__main__":
-    # solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (None, None)

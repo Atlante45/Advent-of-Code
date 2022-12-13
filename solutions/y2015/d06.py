@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 from enum import Enum
 import itertools
 import re
@@ -21,6 +17,37 @@ def draw(lights):
 
 def get_coords(start, end):
     return itertools.product(range(start[0], end[0] + 1), range(start[1], end[1] + 1))
+
+
+class Command(Enum):
+    TURN_ON = (0,)
+    TURN_OFF = (1,)
+    TOGGLE = 2
+
+
+def parse_coords(coords):
+    return [int(x) for x in coords.split(",")]
+
+
+def parse_command(command):
+    if command == "turn on":
+        return Command.TURN_ON
+    elif command == "turn off":
+        return Command.TURN_OFF
+    elif command == "toggle":
+        return Command.TOGGLE
+
+
+def parse(data):
+    commands = []
+    for line in data.splitlines():
+        groups = re.search(
+            "^(turn on|turn off|toggle) (.*) through (.*)", line
+        ).groups()
+        commands.append(
+            (parse_command(groups[0]), parse_coords(groups[1]), parse_coords(groups[2]))
+        )
+    return commands
 
 
 def part1(commands):
@@ -59,55 +86,9 @@ def part2(commands):
     return sum(lights)
 
 
-class Command(Enum):
-    TURN_ON = (0,)
-    TURN_OFF = (1,)
-    TOGGLE = 2
-
-
-def parse_coords(coords):
-    return [int(x) for x in coords.split(",")]
-
-
-def parse_command(command):
-    if command == "turn on":
-        return Command.TURN_ON
-    elif command == "turn off":
-        return Command.TURN_OFF
-    elif command == "toggle":
-        return Command.TOGGLE
-
-
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    commands = []
-    for line in data:
-        groups = re.search(
-            "^(turn on|turn off|toggle) (.*) through (.*)", line
-        ).groups()
-        commands.append(
-            (parse_command(groups[0]), parse_coords(groups[1]), parse_coords(groups[2]))
-        )
-    # print(commands)
-
-    ans_1 = part1(commands)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(commands)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (377891, 14110788)
-TEST_RESULT = (30, 30)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 turn on 1,10 through 5,15
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (30, 30)
