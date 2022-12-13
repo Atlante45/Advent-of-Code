@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
 from itertools import chain, product
 from more_itertools import first, split_after
 from math import prod
-
-from solutions.utils import logger
-from aocd import data
 
 
 def ranges(trees, a, b):
@@ -28,6 +24,10 @@ def score(trees, a, b):
     return prod(view_dist(range) for range in ranges(trees, a, b))
 
 
+def parse(data):
+    return data.splitlines()
+
+
 def part1(data):
     trees = list(list(map(int, list(line))) for line in data)
     indices = product(range(1, len(data) - 1), range(1, len(data[0]) - 1))
@@ -43,30 +43,13 @@ def part2(data):
     return max(score(trees, i, j) for i, j in indices)
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (1849, 201600)
-TEST_RESULT = (21, 8)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 30373
 25512
 65332
 33549
 35390
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (21, 8)

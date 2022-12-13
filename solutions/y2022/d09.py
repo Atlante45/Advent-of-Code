@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
 from itertools import chain, repeat
-from solutions.utils import logger
-from aocd import data
 
 
 def move_head(head, dir):
@@ -45,6 +42,14 @@ def move_rope(num, moves):
     return len(visited)
 
 
+def parse(data):
+    return list(
+        chain.from_iterable(
+            repeat(line[0], int(line[2:])) for line in data.splitlines()
+        )
+    )
+
+
 def part1(moves):
     return move_rope(2, moves)
 
@@ -53,27 +58,9 @@ def part2(moves):
     return move_rope(10, moves)
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    moves = list(
-        chain.from_iterable(
-            repeat(line[0], int(line[2:])) for line in data.splitlines()
-        )
-    )
-
-    ans_1 = part1(moves)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(moves)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (5883, 2367)
-TEST_RESULT = (88, 36)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 R 5
 U 8
 L 8
@@ -83,7 +70,4 @@ D 10
 L 25
 U 20
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (88, 36)

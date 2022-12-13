@@ -1,9 +1,5 @@
-#!/usr/bin/env python3
 from collections import defaultdict
 import os
-
-from solutions.utils import logger
-from aocd import data
 
 
 def add_file(directories, path, size):
@@ -13,11 +9,11 @@ def add_file(directories, path, size):
         directories[cwd] += size
 
 
-def parse_directories(data):
+def parse(data):
     directories = defaultdict(int)
 
     path = ["/"]
-    for line in data:
+    for line in data.splitlines():
         if line == "$ ls" or line.startswith("dir"):
             continue
 
@@ -33,35 +29,19 @@ def parse_directories(data):
     return directories
 
 
-def part1(data):
-    directories = parse_directories(data)
+def part1(directories):
     return sum(size for size in directories.values() if size < 100000)
 
 
-def part2(data):
-    directories = parse_directories(data)
+def part2(directories):
     available = 70000000 - directories["/"]
     needed = 30000000 - available
     return min(size for size in directories.values() if size >= needed)
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (1844187, 4978279)
-TEST_RESULT = (95437, 24933642)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 $ cd /
 $ ls
 dir a
@@ -86,7 +66,4 @@ $ ls
 5626152 d.ext
 7214296 k
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (95437, 24933642)

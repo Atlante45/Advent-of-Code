@@ -1,10 +1,16 @@
-#!/usr/bin/env python3
 from math import prod
 import re
-from solutions.utils import logger
-from aocd import data
 
-REGEX = r"Monkey (\d+):\n  Starting items: (.+)\n  Operation: new = old (.) (\d+|old)\n  Test: divisible by (\d+)\n    If true: throw to monkey (\d+)\n    If false: throw to monkey (\d+)"
+REGEX = a = re.compile(
+    r"""
+Monkey (\d+):
+  Starting items: (.+)
+  Operation: new = old (.) (\d+|old)
+  Test: divisible by (\d+)
+    If true: throw to monkey (\d+)
+    If false: throw to monkey (\d+)
+    """.strip()
+)
 
 
 class Monkey:
@@ -50,30 +56,8 @@ class Monkey:
         self.items.append(item)
 
 
-def part1(data):
+def parse(data):
     monkeys = []
-
-    chunks = data.split("\n\n")
-    for chunk in chunks:
-        monkeys.append(Monkey(chunk))
-
-    for i in range(20):
-        for m in monkeys:
-            while m.has_items():
-                item, nm = m.examine_item(3)
-                monkeys[nm].catch_item(item)
-
-    counts = []
-    for m in monkeys:
-        counts.append(m.num_examines())
-    counts.sort()
-
-    return prod(counts[-2:])
-
-
-def part2(data):
-    monkeys = []
-
     gdiv = 1
 
     chunks = data.split("\n\n")
@@ -81,35 +65,34 @@ def part2(data):
         monkeys.append(Monkey(chunk))
         gdiv *= monkeys[-1].div
 
-    for i in range(10000):
+    return monkeys, gdiv
+
+
+def part1(monkeys, _):
+    for _ in range(20):
+        for m in monkeys:
+            while m.has_items():
+                item, nm = m.examine_item(3)
+                monkeys[nm].catch_item(item)
+
+    counts = sorted(m.num_examines() for m in monkeys)
+    return prod(counts[-2:])
+
+
+def part2(monkeys, gdiv):
+    for _ in range(10000):
         for m in monkeys:
             while m.has_items():
                 item, nm = m.examine_item(1, gdiv)
                 monkeys[nm].catch_item(item)
 
-    counts = []
-    for m in monkeys:
-        counts.append(m.num_examines())
-    counts.sort()
-
+    counts = sorted(m.num_examines() for m in monkeys)
     return prod(counts[-2:])
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (None, None)
-TEST_RESULT = (10605, 2713310158)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
@@ -138,7 +121,4 @@ Monkey 3:
     If true: throw to monkey 0
     If false: throw to monkey 1
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (10605, 2713310158)

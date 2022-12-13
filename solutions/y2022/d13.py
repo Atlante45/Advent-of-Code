@@ -13,8 +13,8 @@ def compare(a, b):
     if isinstance(b, int):
         b = [b]
 
-    for i in range(min(len(a), len(b))):
-        comp = compare(a[i], b[i])
+    for x, y in zip(a, b):
+        comp = compare(x, y)
         if comp != 0:
             return comp
 
@@ -30,8 +30,8 @@ def part1(packets):
 
 
 def part2(packets):
-    packets = sorted(packets + [[[2]], [[6]]], key=cmp_to_key(compare))
-    return (packets.index([[2]]) + 1) * (packets.index([[6]]) + 1)
+    packets = sorted(packets + [2, 6], key=cmp_to_key(compare))
+    return (packets.index(2) + 1) * (packets.index(6) + 1)
 
 
 TEST_DATA = {}

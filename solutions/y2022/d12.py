@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-from solutions.utils import logger
-from aocd import data
-
 from solutions.utils.graph import dijkstra, neighbors4
 
 
@@ -9,7 +5,7 @@ def parse(data):
     start = end = None
 
     heightmap = []
-    for r, line in enumerate(data):
+    for r, line in enumerate(data.splitlines()):
         row = []
         for c, p in enumerate(line):
             match p:
@@ -25,9 +21,7 @@ def parse(data):
     return start, end, heightmap
 
 
-def part1(data):
-    start, end, heightmap = parse(data)
-
+def part1(start, end, heightmap):
     def neighbors(n):
         i, j = n
         return [
@@ -40,9 +34,7 @@ def part1(data):
     return cost_so_far[end]
 
 
-def part2(data):
-    _, end, heightmap = parse(data)
-
+def part2(_, end, heightmap):
     def neighbors(n):
         i, j = n
         return [
@@ -61,30 +53,13 @@ def part2(data):
     return cost_so_far[end]
 
 
-def solve(data, name="input", result=None, debug=False):
-    logger.debug_name(name, debug)
-
-    data = data.splitlines()
-
-    ans_1 = part1(data)
-    logger.debug_part(0, ans_1, result, debug)
-
-    ans_2 = part2(data)
-    logger.debug_part(1, ans_2, result, debug)
-
-    return ans_1, ans_2
-
-
-INPUT_RESULT = (484, 478)
-TEST_RESULT = (31, 29)
-TEST_DATA = """\
+TEST_DATA = {}
+TEST_DATA[
+    """\
 Sabqponm
 abcryxxl
 accszExk
 acctuvwj
 abdefghi
 """.rstrip()
-
-if __name__ == "__main__":
-    solve(TEST_DATA, name="example", result=TEST_RESULT, debug=True)
-    solve(data, name="input", result=INPUT_RESULT, debug=True)
+] = (31, 29)
