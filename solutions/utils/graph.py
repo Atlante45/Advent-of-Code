@@ -41,6 +41,30 @@ def neighbors8(i, j, max_i, max_j=None):
     return [(x, y) for (x, y) in cells if x >= 0 and x < max_i and y >= 0 and y < max_j]
 
 
+def neighbors6(i, j, k, max_i, max_j=None, max_k=None):
+
+    if not max_j:
+        max_j = max_i
+
+    if not max_k:
+        max_k = max_i
+
+    cells = [
+        (i - 1, j, k),
+        (i + 1, j, k),
+        (i, j - 1, k),
+        (i, j + 1, k),
+        (i, j, k - 1),
+        (i, j, k + 1),
+    ]
+
+    return [
+        (x, y, z)
+        for (x, y, z) in cells
+        if x >= -10 and x < max_i and y >= -10 and y < max_j and z >= -10 and z < max_k
+    ]
+
+
 def dijkstra(starts, neighbors, cost=None):
     if not isinstance(starts, list):
         starts = [starts]
