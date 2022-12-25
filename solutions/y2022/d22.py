@@ -1,7 +1,6 @@
 from math import gcd
 import re
 
-
 REGEX = re.compile(r"(\d+|.)")
 SYM = [">", "V", "<", "^"]
 
@@ -33,20 +32,27 @@ def get(map, x, y):
         return " "
 
 
+def set(map, x, y, dir):
+    map[y] = map[y][:x] + SYM[dir] + map[y][x + 1 :]
+
+
 class Cube:
-    def __init__(self, map, pos) -> None:
+    def __init__(self, map) -> None:
         self.map = map
-        self.max_y = len(self.map)
-        self.max_x = max(len(row) for row in self.map)
-        self.side_l = gcd(self.max_x, self.max_y)
-        self.width = self.max_x // self.side_l
-        self.height = self.max_y // self.side_l
-        self.top = (pos[0] // self.side_l, pos[1] // self.side_l)
+
+        max_x = max(len(row) for row in self.map)
+        max_y = len(self.map)
+        self.side_l = gcd(max_x, max_y)
+        self.width = max_x // self.side_l
+        self.height = max_y // self.side_l
 
         self.faces = {}
         self.face_coords = {}
         self.face_rots = {}
-        self.map_faces(self.top[0], self.top[1], 0, 0)
+
+        start = find_start(map)
+        face0 = (start[0] // self.side_l, start[1] // self.side_l)
+        self.map_faces(face0[0], face0[1], 0, 0)
 
     def __str__(self) -> str:
         rows = []
@@ -67,8 +73,6 @@ class Cube:
         return "\n".join(rows)
 
     def is_face(self, x, y):
-        if x < 0 or x >= self.width or y < 0 or y >= self.height:
-            return False
         return get(self.map, x * self.side_l, y * self.side_l) != " "
 
     def map_faces(self, x, y, face, rot):
@@ -125,7 +129,7 @@ class Cube:
         return (new_x, new_y), dir, get(self.map, new_x, new_y)
 
 
-def find_top(map):
+def find_start(map):
     for i in range(len(map[0])):
         if map[0][i] != " ":
             return (i, 0)
@@ -144,10 +148,31 @@ def get_next(map, pos, dir):
     while True:
         ch = get(map, x, y)
         if ch != " ":
-            return (x, y), ch
+            return (x, y), dir, ch
 
         y = (y + dy) % max_y
         x = (x + dx) % max_x
+
+
+def walk(map, path, next):
+    pos = find_start(map)
+    dir = 0
+
+    for move in path:
+        match move:
+            case "L":
+                dir = (dir - 1) % 4
+            case "R":
+                dir = (dir + 1) % 4
+            case _:
+                for _ in range(int(move)):
+                    npos, ndir, ch = next(pos, dir)
+                    if ch == "#":
+                        break
+                    pos = npos
+                    dir = ndir
+
+    return 1000 * (pos[1] + 1) + 4 * (pos[0] + 1) + dir
 
 
 def parse(data):
@@ -156,45 +181,15 @@ def parse(data):
 
 
 def part1(map, path):
-    pos = find_top(map)
-    dir = 0
+    def next(pos, dir):
+        return get_next(map, pos, dir)
 
-    for move in path:
-        if move.isnumeric():
-            for _ in range(int(move)):
-                nex, ch = get_next(map, pos, dir)
-                if ch == "#":
-                    break
-                pos = nex
-        else:
-            dir = (dir + (1 if move == "R" else -1)) % len(DIRS)
-
-    return 1000 * (pos[1] + 1) + 4 * (pos[0] + 1) + dir
+    return walk(map, path, next)
 
 
 def part2(map, path):
-    pos = find_top(map)
-    cube = Cube(map, pos)
-    dir = 0
-
-    for move in path:
-        if move == "R" and pos == (12, 9):
-            break
-        if move.isnumeric():
-            for _ in range(int(move)):
-                nex, ndir, ch = cube.get_next(pos, dir)
-                if ch == "#":
-                    break
-                pos = nex
-                dir = ndir
-                map[pos[1]] = (
-                    map[pos[1]][: pos[0]] + SYM[dir] + map[pos[1]][pos[0] + 1 :]
-                )
-        else:
-            dir = (dir + (1 if move == "R" else -1)) % len(DIRS)
-            map[pos[1]] = map[pos[1]][: pos[0]] + SYM[dir] + map[pos[1]][pos[0] + 1 :]
-
-    return 1000 * (pos[1] + 1) + 4 * (pos[0] + 1) + dir
+    cube = Cube(map)
+    return walk(map, path, cube.get_next)
 
 
 TEST_DATA = {}
