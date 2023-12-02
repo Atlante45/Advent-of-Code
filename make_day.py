@@ -28,7 +28,12 @@ def validate_day(ctx, param, day):
 @click.option("--day", "-d", prompt="Day", default=TODAY.day, callback=validate_day)
 @click.option("--open", is_flag=True, default=False)
 def main(year, day, open):
-    day_path = os.path.join(ROOT_PATH, "solutions", f"y{year}", f"d{day:02d}.py")
+    year_path = os.path.join(ROOT_PATH, "solutions", f"y{year}")
+    day_path = os.path.join(year_path, f"d{day:02d}.py")
+    if not os.path.exists(year_path):
+        os.mkdir(year_path)
+        click.echo(f"Created folder for year {year}")
+
     if os.path.exists(day_path):
         raise click.UsageError(f"y{year}/d{day:02d}.py already exists")
 
