@@ -5,7 +5,7 @@ import re
 COLORS = ["red", "green", "blue"]
 CUBES = [12, 13, 14]
 
-PATTERN = "(\d+) {color}"
+PATTERN = "(\\d+) {color}"
 
 
 def parse_line(line):
