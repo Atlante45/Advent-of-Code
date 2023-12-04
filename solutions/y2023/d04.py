@@ -1,38 +1,24 @@
+def parse_line(line):
+    winning, mine = [set(map(int, nums.split())) for nums in line.split("|")]
+    return len(winning.intersection(mine))
+
+
 def parse(data):
-    return [line.split(":")[1].split("|") for line in data.splitlines()]
+    return [parse_line(line.split(":")[1]) for line in data.splitlines()]
 
 
-def part1(lines):
-    sum = 0
-    for line in lines:
-        win = list(map(int, line[0].split()))
-        nums = list(map(int, line[1].split()))
-        points = 0
-        for num in nums:
-            if num in win:
-                if points > 0:
-                    points *= 2
-                else:
-                    points += 1
-        sum += points
-
-    return sum
+def part1(cards):
+    return sum(pow(2, matches - 1) for matches in cards if matches > 0)
 
 
-def part2(lines):
-    cards = len(lines) * [1]
+def part2(cards):
+    copies = len(cards) * [1]
 
-    for i, line in enumerate(lines):
-        win = list(map(int, line[0].split()))
-        nums = list(map(int, line[1].split()))
-        points = 0
-        for num in nums:
-            if num in win:
-                points += 1
-        for j in range(points):
-            cards[i + 1 + j] += cards[i]
+    for i, matches in enumerate(cards):
+        for j in range(matches):
+            copies[i + 1 + j] += copies[i]
 
-    return sum(cards)
+    return sum(copies)
 
 
 TEST_DATA = {}
