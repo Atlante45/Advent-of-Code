@@ -82,7 +82,7 @@ def parse(data):
             for x, y in range_coords(a, b):
                 slice[(x, y)] = "#"
 
-    print(min_x, max_x, min_y, max_y)
+    # print(min_x, max_x, min_y, max_y)
 
     return slice, min_x, max_x, min_y, max_y
 

@@ -60,7 +60,7 @@ def part2(sensors, is_test):
     for y in range(max_c):
         ranges = compute(sensors, y, max_c)
         if len(ranges) > 1:
-            print(ranges)
+            # print(ranges)
             return 4000000 * min(r[1] + 1 for r in ranges) + y
 
 

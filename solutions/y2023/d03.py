@@ -1,4 +1,4 @@
-from solutions.utils.graph import neighbors4, neighbors8
+from solutions.utils.graph import neighbors8
 
 
 def parse(data):
