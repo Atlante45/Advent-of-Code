@@ -1,37 +1,30 @@
+from math import prod
 import re
 
 
-def parse(data):
-    return data.splitlines()
-
-
-CUBES = {"red": 12, "green": 13, "blue": 14}
+COLORS = ["red", "green", "blue"]
+CUBES = [12, 13, 14]
 
 PATTERN = "(\d+) {color}"
 
 
-def part1(lines):
-    sum = 0
-    for i in range(len(lines)):
-        sum += i + 1
-        for color, num in CUBES.items():
-            dices = map(int, re.findall(PATTERN.format(color=color), lines[i]))
-            if max(dices) > num:
-                sum -= i + 1
-                break
-    return sum
+def parse_line(line):
+    cubes = [
+        max(map(int, re.findall(PATTERN.format(color=color), line))) for color in COLORS
+    ]
+    return cubes, all([c <= C for c, C in zip(cubes, CUBES)])
 
 
-def part2(lines):
-    sum = 0
-    for i in range(len(lines)):
-        power = 1
-        for color, _ in CUBES.items():
-            dices = map(int, re.findall(PATTERN.format(color=color), lines[i]))
-            power *= max(dices)
-        sum += power
+def parse(data):
+    return [parse_line(line) for line in data.splitlines()]
 
-    return sum
+
+def part1(games):
+    return sum(i + 1 for i, (_, valid) in enumerate(games) if valid)
+
+
+def part2(games):
+    return sum(prod(cubes) for cubes, _ in games)
 
 
 TEST_DATA = {}
