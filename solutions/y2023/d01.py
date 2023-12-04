@@ -1,6 +1,22 @@
 from curses.ascii import isdigit
 
-numbers = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+numbers = [
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+]
+
+
+def replace(line):
+    for i, n in enumerate(numbers):
+        line = line.replace(n, n[0] + str(i + 1) + n[-1])
+    return line
 
 
 def parse(data):
@@ -8,41 +24,13 @@ def parse(data):
 
 
 def part1(lines):
-    sum = 0
-    for line in lines:
-        sum += int(next(filter(isdigit, line)) + next(filter(isdigit, reversed(line))))
-    return sum
+    digits = [list(map(int, filter(isdigit, line))) for line in lines]
+    return sum(10 * nums[0] + nums[-1] for nums in digits)
 
 
 def part2(lines):
-    sum = 0
-    for line in lines:
-        first = None
-        for i in range(0, len(line)):
-            if isdigit(line[i]):
-                first = int(line[i])
-                break
-            for j in range(0, len(numbers)):
-                if line[i:].startswith(numbers[j]):
-                    first = j + 1
-                    break
-            if first is not None:
-                break
-
-        last = None
-        for i in reversed(range(0, len(line))):
-            if isdigit(line[i]):
-                last = int(line[i])
-                break
-            for j in reversed(range(0, len(numbers))):
-                if line[i:].startswith(numbers[j]):
-                    last = j + 1
-                    break
-            if last is not None:
-                break
-
-        sum += 10 * first + last
-    return sum
+    lines = map(replace, lines)
+    return part1(lines)
 
 
 TEST_DATA = {}
