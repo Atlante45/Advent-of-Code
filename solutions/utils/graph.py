@@ -94,8 +94,10 @@ def dijkstra(starts, neighbors, cost=None):
 
 
 def a_star(starts, goal, neighbors, cost=None, heuristic=None):
+    if not isinstance(starts, list):
+        starts = [starts]
     if heuristic is None:
-        heuristic = lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1])
+        heuristic = lambda a, b: sum(abs(x - y) for x, y in zip(a, b))
     if cost is None:
         cost = lambda c, n: 1
 
@@ -103,8 +105,6 @@ def a_star(starts, goal, neighbors, cost=None, heuristic=None):
     came_from = {}
     cost_so_far = {}
 
-    if not isinstance(starts, list):
-        starts = [starts]
     for start in starts:
         frontier.put(start, 0)
         came_from[start] = None

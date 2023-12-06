@@ -1,53 +1,4 @@
-from queue import PriorityQueue
-
-
-def neighbors4(i, j, max_i, max_j=None):
-    if isinstance(max_i, list):
-        max_j = len(max_i[0])
-        max_i = len(max_i)
-
-    if not max_j:
-        max_j = max_i
-
-    cells = [
-        (i - 1, j),
-        (i + 1, j),
-        (i, j - 1),
-        (i, j + 1),
-    ]
-
-    return [(x, y) for (x, y) in cells if x >= 0 and x < max_i and y >= 0 and y < max_j]
-
-
-def heuristic(a, b):
-    (x1, y1) = a
-    (x2, y2) = b
-    return abs(x1 - x2) + abs(y1 - y2)
-
-
-def a_star_search(start, goal, neighbors, cost):
-    frontier = PriorityQueue()
-    frontier.put(start, 0)
-    came_from = {}
-    cost_so_far = {}
-    came_from[start] = None
-    cost_so_far[start] = 0
-
-    while not frontier.empty():
-        current = frontier.get()
-
-        if current == goal:
-            break
-
-        for next in neighbors(current):
-            new_cost = cost_so_far[current] + cost(next)
-            if next not in cost_so_far or new_cost < cost_so_far[next]:
-                cost_so_far[next] = new_cost
-                priority = new_cost + heuristic(next, goal)
-                frontier.put(next, priority)
-                came_from[next] = current
-
-    return came_from, cost_so_far
+from solutions.utils.graph import a_star, neighbors4
 
 
 def parse(data):
@@ -66,11 +17,11 @@ def part1(input):
         i, j = n
         return neighbors4(i, j, input)
 
-    def cost(n):
+    def cost(_, n):
         i, j = n
         return input[i][j]
 
-    _, cost_so_far = a_star_search(start, end, neighbors, cost)
+    _, cost_so_far = a_star(start, end, neighbors, cost)
     return cost_so_far[end]
 
 
@@ -83,11 +34,11 @@ def part2(input):
         i, j = n
         return neighbors4(i, j, 5 * size, 5 * size)
 
-    def cost(n):
+    def cost(_, n):
         i, j = n
         return (input[i % size][j % size] + i // size + j // size - 1) % 9 + 1
 
-    _, cost_so_far = a_star_search(start, end, neighbors, cost)
+    _, cost_so_far = a_star(start, end, neighbors, cost)
     return cost_so_far[end]
 
 
