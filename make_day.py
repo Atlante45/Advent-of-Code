@@ -19,7 +19,7 @@ def validate_year(ctx, param, year):
 
 def validate_day(ctx, param, day):
     if day < 1 or day > 25:
-        raise click.BadParameter("day should be in range [0, 25]")
+        raise click.BadParameter("day should be in range [1, 25]")
     return day
 
 
@@ -34,11 +34,11 @@ def main(year, day, open):
         os.mkdir(year_path)
         click.echo(f"Created folder for year {year}")
 
-    if os.path.exists(day_path):
-        raise click.UsageError(f"y{year}/d{day:02d}.py already exists")
-
-    shutil.copyfile(TEMPLATE_PATH, day_path)
-    click.echo(f"Created script for y{year}/d{day:02d}.py")
+    if not os.path.exists(day_path):
+        shutil.copyfile(TEMPLATE_PATH, day_path)
+        click.echo(f"Created script for y{year}/d{day:02d}.py")
+    else:
+        click.echo(f"y{year}/d{day:02d}.py already exists")
 
     if open:
         subprocess.run(f"code {day_path}", shell=True, check=True)
