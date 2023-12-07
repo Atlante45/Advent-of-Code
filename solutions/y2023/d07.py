@@ -1,55 +1,30 @@
-from collections import defaultdict
+CARD_ORDER = "_23456789TJQKA"
 
 
 def order(hand):
-    CARDS = "23456789TJQKA"
-    cards = defaultdict(int)
-
-    cards_strength = 0
-    for c in hand:
-        cards_strength = 100 * cards_strength + CARDS.index(c)
-        cards[c] += 1
-
-    counts = sorted(cards.values(), reverse=True) + [0]
-
-    hand_strength = 10 * counts[0] + counts[1]
-
-    return hand_strength * pow(100, len(hand)) + cards_strength
-
-
-def order_alt(hand):
-    CARDS = "J23456789TQKA"
-    cards = defaultdict(int)
-
-    cards_strength = 0
-    for c in hand:
-        cards_strength = 100 * cards_strength + CARDS.index(c)
-        cards[c] += 1
-
-    j_count = cards["J"]
-    del cards["J"]
+    hand, _ = hand
+    cards = {card: hand.count(card) for card in hand if card != "_"}
     counts = sorted(cards.values(), reverse=True) + [0, 0]
+    counts[0] += hand.count("_")
+    return (counts[0], counts[1]) + tuple(CARD_ORDER.index(c) for c in hand)
 
-    hand_strength = 10 * (counts[0] + j_count) + counts[1]
 
-    return hand_strength * pow(100, len(hand)) + cards_strength
+def solve(hands):
+    return sum(i * bid for i, [_, bid] in enumerate(sorted(hands, key=order), 1))
 
 
 def parse(data):
-    return [line.split() for line in data.splitlines()]
+    lines = [line.split() for line in data.splitlines()]
+    return [(hand, int(bid)) for hand, bid in lines]
 
 
-def solve(lines, ordering):
-    hands = sorted(lines, key=lambda v: ordering(v[0]))
-    return sum((i + 1) * int(hand[1]) for i, hand in enumerate(hands))
+def part1(hands):
+    return solve(hands)
 
 
-def part1(lines):
-    return solve(lines, order)
-
-
-def part2(lines):
-    return solve(lines, order_alt)
+def part2(hands):
+    hands = [(hand.replace("J", "_"), bid) for (hand, bid) in hands]
+    return solve(hands)
 
 
 TEST_DATA = {}
