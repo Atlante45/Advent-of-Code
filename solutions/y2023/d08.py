@@ -1,4 +1,5 @@
-import math
+from itertools import cycle
+from math import lcm
 import re
 
 
@@ -9,33 +10,20 @@ def parse(data):
     return [0 if c == "L" else 1 for c in lr.strip()], {a: [b, c] for a, b, c in nodes}
 
 
-def part1(lr, nodes):
-    start = "AAA"
-    steps = 0
-    while True:
-        for m in lr:
-            start = nodes[start][m]
-            steps += 1
-        if start == "ZZZ":
-            return steps
+def solve(start, moves, nodes, win):
+    for step, move in enumerate(cycle(moves), 1):
+        start = nodes[start][move]
+        if win(start):
+            return step
 
 
-def part2(lr, nodes):
+def part1(moves, nodes):
+    return solve("AAA", moves, nodes, lambda n: n == "ZZZ")
+
+
+def part2(moves, nodes):
     starts = [node for node in nodes.keys() if node[-1] == "A"]
-    loops = []
-
-    for start in starts:
-        current = start
-        steps = 0
-        while True:
-            for m in lr:
-                current = nodes[current][m]
-                steps += 1
-            if current[-1] == "Z":
-                loops += [steps]
-                break
-
-    return math.lcm(*loops)
+    return lcm(*[solve(s, moves, nodes, lambda n: n[-1] == "Z") for s in starts])
 
 
 TEST_DATA = {}
