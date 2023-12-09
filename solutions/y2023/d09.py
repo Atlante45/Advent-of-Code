@@ -5,38 +5,23 @@ def parse(data):
     return [list(map(int, line.split())) for line in data.splitlines()]
 
 
+def extrapolate(values):
+    all_values = [values]
+    while not all(v == 0 for v in values):
+        values = [b - a for a, b in pairwise(values)]
+        all_values += [values]
+    return all_values
+
+
 def part1(lines):
-    res = 0
-    for line in lines:
-        all_lines = [line]
-        current = line
-        while not all(v == 0 for v in current):
-            current = [b - a for a, b in pairwise(current)]
-            all_lines += [current]
-        res += sum(a[-1] for a in all_lines)
-
-        # print(all_lines)
-
-    return res
+    return sum(sum(a[-1] for a in extrapolate(line)) for line in lines)
 
 
 def part2(lines):
-    res = 0
-    for line in lines:
-        all_lines = [line]
-        current = line
-        while not all(v == 0 for v in current):
-            current = [b - a for a, b in pairwise(current)]
-            all_lines += [current]
-        p = 0
-        for a in reversed(all_lines):
-            p = a[0] - p
-            # print(p)
-        res += p
-
-        # print(all_lines)
-
-    return res
+    return sum(
+        sum(pow(-1, i) * a[0] for i, a in enumerate(extrapolate(line)))
+        for line in lines
+    )
 
 
 TEST_DATA = {}
