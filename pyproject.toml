@@ -8,11 +8,11 @@ packages = [{ include = "solutions" }]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
-advent-of-code-data = "^1.3.0"
-click = "^8.1.3"
+advent-of-code-data = "^2.0.1"
+click = "^8.1.7"
 more-itertools = "^10.1.0"
-numpy = "^1.23.5"
-scipy = "^1.9.3"
+numpy = "^1.26.2"
+scipy = "^1.11.4"
 tqdm = "^4.66.1"
 
 [tool.poetry.group.dev.dependencies]
