@@ -1,60 +1,57 @@
 from functools import cache
 
 
+@cache
+def count_ways(springs, runs, i, j, count):
+    if j == len(runs):
+        return 1 if "#" not in springs[i:] else 0
+    if i == len(springs):
+        return 1 if runs[j:] == (count,) else 0
+
+    match springs[i]:
+        case "#":
+            if count < runs[j]:
+                return count_ways(springs, runs, i + 1, j, count + 1)
+            else:
+                return 0
+        case ".":
+            if count == 0:
+                return count_ways(springs, runs, i + 1, j, 0)
+            elif count == runs[j]:
+                return count_ways(springs, runs, i + 1, j + 1, 0)
+            else:
+                return 0
+        case "?":
+            if count == 0:
+                r1 = count_ways(springs, runs, i + 1, j, 1)
+                r2 = count_ways(springs, runs, i + 1, j, 0)
+                return r1 + r2
+            elif count == runs[j]:
+                return count_ways(springs, runs, i + 1, j + 1, 0)
+            else:
+                return count_ways(springs, runs, i + 1, j, count + 1)
+
+
+def solve(line, factor):
+    springs, runs = line.split()
+    springs = "?".join(factor * [springs])
+    runs = ",".join(factor * [runs])
+
+    runs = list(map(int, runs.split(",")))
+
+    return count_ways(springs, tuple(runs), 0, 0, 0)
+
+
 def parse(data):
     return data.splitlines()
 
-@cache
-def mems(springs, nums, count):
-    if len(springs) == 0:
-        if count > 0 and len(nums) == 1 and count == nums[0]:
-            return 1
-        else:
-            return 1 if len(nums) == 0 and count == 0 else 0
-
-    s = springs[0]
-    if s == "#":
-        if len(nums) == 0 or nums[0] <= count:
-            return 0
-        else:
-            return mems(springs[1:], nums, count + 1)
-    elif s == "?":
-        if count == 0:
-            return mems(springs[1:], nums, count + 1) + mems(springs[1:], nums, 0)
-        elif len(nums) > 0 and count == nums[0]:
-            return mems(springs[1:], nums[1:], 0)
-        elif len(nums) == 0 or nums[0] <= count:
-            return 0
-        else:
-            return mems(springs[1:], nums, count + 1)
-    elif count == 0:
-        return mems(springs[1:], nums, count)
-    elif len(nums) > 0 and count == nums[0]:
-        return mems(springs[1:], nums[1:], 0)
-    else:
-        return 0
-
-def solve(line):
-    springs, nums = line.split()
-    nums = list(map(int, nums.split(",")))
-    
-    return mems(springs, tuple(nums), 0)
-
-def solve2(line):
-    springs, nums = line.split()
-    springs = (5 * (springs + "?"))[:-1]
-    nums = (5 * (nums + ","))[:-1]
-    
-    nums = list(map(int, nums.split(",")))
-
-    return mems(springs, tuple(nums), 0)
 
 def part1(lines):
-    return sum(solve(line) for line in lines)
+    return sum(solve(line, 1) for line in lines)
 
 
 def part2(lines):
-    return sum(solve2(line) for line in lines)
+    return sum(solve(line, 5) for line in lines)
 
 
 TEST_DATA = {}
