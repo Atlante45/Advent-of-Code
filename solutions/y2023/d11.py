@@ -1,14 +1,16 @@
 from itertools import combinations
 
 
-def distance(start, end, empty_list, factor):
-        si = min(start, end)
-        ei = max(start, end)
-        empty_count = len(set(range(si, ei)).intersection(empty_list)) 
-        return (ei - si) + (factor - 1) * empty_count
+def distance(start, end, empty, factor):
+    visited = set(range(start, end, 1 if start < end else -1))
+    return abs(end - start) + (factor - 1) * len(visited & empty)
+
 
 def solve(galaxies, empty_rows, empty_cols, factor):
-    return sum(distance(ai, bi, empty_rows, factor) + distance(aj, bj, empty_cols, factor) for (ai, aj), (bi, bj) in combinations(galaxies, 2))
+    return sum(
+        distance(ai, bi, empty_rows, factor) + distance(aj, bj, empty_cols, factor)
+        for (ai, aj), (bi, bj) in combinations(galaxies, 2)
+    )
 
 
 def parse(data):
@@ -49,4 +51,4 @@ TEST_DATA[
 .......#..
 #...#.....
 """.rstrip()
-] = (374, None)
+] = (374, 82000210)
