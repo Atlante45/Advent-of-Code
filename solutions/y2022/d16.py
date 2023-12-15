@@ -1,4 +1,4 @@
-from itertools import combinations, permutations
+from functools import cache
 import re
 
 from solutions.utils.graph import dijkstra
@@ -12,12 +12,9 @@ def parse(data):
     tunnels = {}
     for line in data.splitlines():
         v, f, t = REGEX.search(line).groups()
-        f = int(f)
-        t = t.split(", ")
-        valves[v] = f
-        tunnels[v] = t
+        valves[v] = int(f)
+        tunnels[v] = t.split(", ")
 
-    nodes = sorted(filter(lambda x: x[1] != 0, valves.items()), key=lambda x: -x[1])
     edges = {}
 
     def neighbors(valve):
@@ -28,55 +25,97 @@ def parse(data):
         for dest, cost in cost_so_far.items():
             edges[(valve, dest)] = cost
 
-    return nodes, edges
+    return valves, edges
 
 
-def compute_route(route, edges, time):
-    pos = "AA"
-    pressure = 0
-    total = 0
-    for v, flow in route:
-        dist = edges[(pos, v)] + 1
-        if time - dist < 0:
-            break
-        total += dist * pressure
-        time -= dist
-        pressure += flow
-        pos = v
+def part1(valves, edges):
+    candidates = [valve for valve, flow in valves.items() if flow > 0]
 
-    total += time * pressure
-    return total
+    @cache
+    def visit(visited, pos, time_left):
+        if time_left == 0:
+            return (0, ())
 
+        res = max(
+            (
+                visit(visited + (v,), v, time_left - edges[(pos, v)] - 1)
+                for v in candidates
+                if v not in visited and edges[(pos, v)] + 1 <= time_left
+            ),
+            key=lambda x: x[0],
+            default=(0, ()),
+        )
 
-def part1(nodes, edges):
-    # Real input is too slow, yolo
-    if len(nodes) != 6:
-        nodes = nodes[:-5]
+        return valves[pos] * time_left + res[0], res[1]
 
-    return max(compute_route(perm, edges, 30) for perm in permutations(nodes))
+    return visit((), "AA", 30)[0]
 
 
-def part2(nodes, edges):
-    res = 0
+def part2(valves, edges):
+    candidates = [valve for valve, flow in valves.items() if flow > 0]
 
-    valves = set(nodes)
-    # print(valves)
-    for route1 in combinations(valves, len(valves) // 2):
-        route1 = set(route1)
-        route2 = valves - route1
+    @cache
+    def visit(pos, visited, time_left):
+        if time_left == 0:
+            return (0, ())
 
-        max1 = max(compute_route(perm, edges, 26) for perm in permutations(route1))
-        max2 = max(compute_route(perm, edges, 26) for perm in permutations(route2))
-        # if max1 + max2 > res:
-        #     print(route1, max1)
-        #     print(route2, max2)
-        #     print(max1 + max2)
-        res = max(res, max1 + max2)
+        res = max(
+            (
+                visit(v, visited + (v,), time_left - edges[(pos, v)] - 1)
+                for v in candidates
+                if v not in visited and edges[(pos, v)] + 1 <= time_left
+            ),
+            key=lambda x: x[0],
+            default=(0, ()),
+        )
 
-    # for perm in permutations(nodes):
-    #     res = max(res, compute_route(perm, edges))
+        return valves[pos] * time_left + res[0], res[1]
 
-    return res
+    flow, visited = visit("AA", (), 26)
+    flow2, _ = visit(visited, "AA", 26)
+    return flow + flow2
+
+    # @cache
+    # def visit(pos1, pos2, visited, time_left1, time_left2):
+    #     if time_left1 == 0 and time_left2 == 0:
+    #         return 0
+
+    #     res1 = 0
+    #     res2 = 0
+    #     if time_left1 > time_left2:
+    #         res1 = max(
+    #             (
+    #                 visit(
+    #                     v,
+    #                     pos2,
+    #                     visited + (v,),
+    #                     time_left1 - edges[(pos1, v)] - 1,
+    #                     time_left2,
+    #                 )
+    #                 for v in candidates
+    #                 if v not in visited and edges[(pos1, v)] + 1 <= time_left1
+    #             ),
+    #             default=0,
+    #         )
+    #     else:
+    #         res2 = max(
+    #             (
+    #                 visit(
+    #                     pos1,
+    #                     v,
+    #                     visited + (v,),
+    #                     time_left1,
+    #                     time_left2 - edges[(pos2, v)] - 1,
+    #                 )
+    #                 for v in candidates
+    #                 if v not in visited and edges[(pos2, v)] + 1 <= time_left2
+    #             ),
+    #             default=0,
+    #         )
+
+    #     return max(valves[pos1] * time_left1 + res1, valves[pos2] * time_left2 + res2)
+
+    # return visit("AA", "AA", (), 26, 26)
 
 
 TEST_DATA = {}
@@ -93,4 +132,4 @@ Valve HH has flow rate=22; tunnel leads to valve GG
 Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II
 """.rstrip()
-] = (1651, None)
+] = (1651, 1707)
