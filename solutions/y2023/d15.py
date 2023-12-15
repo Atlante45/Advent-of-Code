@@ -2,41 +2,47 @@ from collections import defaultdict
 from functools import reduce
 
 
-def parse(data):
-    return data.split(",")
-
-
 def hash(seq):
     return reduce(lambda a, b: 17 * (a + ord(b)) % 256, seq, 0)
 
 
+def execute(step, boxes, lenses):
+    if "=" in step:
+        label, focal_length = step.split("=")
+        box = boxes[hash(label)]
+        lenses[label] = int(focal_length)
+        if label not in box:
+            box.append(label)
+    else:
+        label = step[:-1]
+        box = boxes[hash(label)]
+        if label in box:
+            box.remove(label)
+
+
+def power(boxes, lenses):
+    return sum(
+        (i + 1) * (j + 1) * lenses[label]
+        for i in range(256)
+        for j, label in enumerate(boxes[i])
+    )
+
+
+def parse(data):
+    return data.split(",")
+
+
 def part1(sequence):
-    return sum(hash(s) for s in sequence)
+    return sum(hash(step) for step in sequence)
 
 
 def part2(sequence):
     boxes = defaultdict(list)
+    lenses = {}
 
-    for s in sequence:
-        if "=" in s:
-            k, v = s.split("=")
-            h = hash(k)
-            box = boxes[h]
-            done = False
-            for i in range(len(box)):
-                if box[i][0] == k:
-                    done = True
-                    box[i] = (k, int(v))
-                    break
-            if not done:
-                box.append((k, int(v)))
-        else:
-            h = hash(s[:-1])
-            boxes[h] = [b for b in boxes[h] if b[0] != s[:-1]]
-
-    return sum(
-        (i + 1) * (j + 1) * b[1] for i in range(256) for j, b in enumerate(boxes[i])
-    )
+    for step in sequence:
+        execute(step, boxes, lenses)
+    return power(boxes, lenses)
 
 
 TEST_DATA = {}
