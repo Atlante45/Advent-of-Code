@@ -30,9 +30,9 @@ def step(
         return geo
 
     time_left = max_t - t
-    ore = min(ore, time_left * max_ore_r - ore_r * (time_left - 1))
-    clay = min(clay, time_left * max_clay_r - clay_r * (time_left - 1))
-    obs = min(obs, time_left * bp[6] - obs_r * (time_left - 1))
+    ore_max = time_left * max_ore_r - ore_r * (time_left - 1)
+    clay_max = time_left * max_clay_r - clay_r * (time_left - 1)
+    obs_max = time_left * bp[6] - obs_r * (time_left - 1)
 
     res = 0
     if ore >= bp[5] and obs >= bp[6]:
@@ -42,9 +42,9 @@ def step(
                 bp,
                 t + 1,
                 max_t,
-                ore + ore_r - bp[5],
-                clay + clay_r,
-                obs + obs_r - bp[6],
+                min(ore_max, ore + ore_r - bp[5]),
+                min(clay_max, clay + clay_r),
+                min(obs_max, obs + obs_r - bp[6]),
                 geo + geo_r,
                 ore_r,
                 max_ore_r,
@@ -54,16 +54,16 @@ def step(
                 geo_r + 1,
             ),
         )
-    if ore >= bp[3] and clay >= bp[4]:
+    if ore >= bp[3] and clay >= bp[4] and obs < obs_max:
         res = max(
             res,
             step(
                 bp,
                 t + 1,
                 max_t,
-                ore + ore_r - bp[3],
-                clay + clay_r - bp[4],
-                obs + obs_r,
+                min(ore_max, ore + ore_r - bp[3]),
+                min(clay_max, clay + clay_r - bp[4]),
+                min(obs_max, obs + obs_r),
                 geo + geo_r,
                 ore_r,
                 max_ore_r,
@@ -74,16 +74,16 @@ def step(
             ),
         )
 
-    if ore >= bp[2] and clay_r < max_clay_r:
+    if ore >= bp[2] and clay < clay_max:
         res = max(
             res,
             step(
                 bp,
                 t + 1,
                 max_t,
-                ore + ore_r - bp[2],
-                clay + clay_r,
-                obs + obs_r,
+                min(ore_max, ore + ore_r - bp[2]),
+                min(clay_max, clay + clay_r),
+                min(obs_max, obs + obs_r),
                 geo + geo_r,
                 ore_r,
                 max_ore_r,
@@ -93,16 +93,16 @@ def step(
                 geo_r,
             ),
         )
-    if ore >= bp[1] and ore_r < max_ore_r:
+    if ore >= bp[1] and ore < ore_max:
         res = max(
             res,
             step(
                 bp,
                 t + 1,
                 max_t,
-                ore + ore_r - bp[1],
-                clay + clay_r,
-                obs + obs_r,
+                min(ore_max, ore + ore_r - bp[1]),
+                min(clay_max, clay + clay_r),
+                min(obs_max, obs + obs_r),
                 geo + geo_r,
                 ore_r + 1,
                 max_ore_r,
@@ -118,9 +118,9 @@ def step(
             bp,
             t + 1,
             max_t,
-            ore + ore_r,
-            clay + clay_r,
-            obs + obs_r,
+            min(ore_max, ore + ore_r),
+            min(clay_max, clay + clay_r),
+            min(obs_max, obs + obs_r),
             geo + geo_r,
             ore_r,
             max_ore_r,
