@@ -1,8 +1,5 @@
 from itertools import cycle
-
 from more_itertools import spy
-
-from solutions.y2021.d19 import add
 
 
 SHAPES = [
@@ -15,7 +12,6 @@ SHAPES = [
 
 
 def shift_rock(rock, x, move):
-    # print("shift", move)
     if move[1] == "<":
         return max(0, x - 1)
     else:
@@ -45,20 +41,14 @@ def land(chamber, rock, x, y):
                 chamber[y + i][x + j] = "#"
 
 
-def print_chamber(chamber):
-    for l in reversed(chamber):
-        print("".join(l))
-
-
-def drop_rock(chamber, rock, pattern):
+def drop_rock(chamber, rock, moves):
     x = 2
-
-    for i in range(3):
-        x = shift_rock(rock, x, next(pattern))
+    for _ in range(3):
+        x = shift_rock(rock, x, next(moves))
 
     y = len(chamber)
     while True:
-        move = next(pattern)
+        move = next(moves)
         new_x = shift_rock(rock, x, move)
         if not collides(chamber, rock, new_x, y):
             x = new_x
@@ -72,36 +62,36 @@ def drop_rock(chamber, rock, pattern):
 
 
 def compute(pattern, count):
-    pattern = cycle(enumerate(pattern))
-    chamber = []
+    moves = cycle(enumerate(pattern))
+    shapes = cycle(enumerate(SHAPES))
 
+    chamber = []
     repeats = {}
 
-    rock_cycle = None
-    height_cycle = None
-
-    r = 0
+    rock_cycle = 0
+    cur_cycle = 0
     added_height = 0
-    while r < count:
-        # print(r, count)
-        rock_id = r % len(SHAPES)
-        rock = SHAPES[rock_id]
-        x, y = drop_rock(chamber, rock, pattern)
 
-        move, pattern = spy(pattern)
-        key = (rock_id, move[0], x)
-        if key in repeats:
-            rock_cycle = r - repeats[key][0]
-            height_cycle = len(chamber) - repeats[key][1]
-            n = (count - r) // rock_cycle
+    rock_index = 0
+    while rock_index < count:
+        shape_id, shape = next(shapes)
+        x, _ = drop_rock(chamber, shape, moves)
 
-            if added_height == 0:
-                added_height = n * height_cycle
-                r += n * rock_cycle
-            # print(rock_cycle, height_cycle, n, added_height, n * rock_cycle)
+        if added_height == 0:
+            [(move_id, _)], moves = spy(moves)
+            key = (shape_id, move_id, x)
+            if key in repeats:
+                rock_cycle = max(0, rock_index - repeats[key][0])
+                cur_cycle += 1
 
-        repeats[key] = (r, len(chamber))
-        r += 1
+                if cur_cycle == rock_cycle:
+                    n = (count - rock_index) // rock_cycle
+                    added_height = n * (len(chamber) - repeats[key][1])
+                    rock_index += n * rock_cycle
+            else:
+                cur_cycle = 0
+            repeats[key] = (rock_index, len(chamber))
+        rock_index += 1
 
     return len(chamber) + added_height
 
