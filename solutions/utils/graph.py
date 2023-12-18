@@ -1,4 +1,15 @@
 from queue import PriorityQueue
+import numpy as np
+
+
+def p(*args):
+    return np.array(args)
+
+
+def v(*args):
+    return np.array(args)
+
+
 
 
 def neighbors4(i, j, max_i, max_j=None):
