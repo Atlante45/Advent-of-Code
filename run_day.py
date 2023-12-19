@@ -3,6 +3,7 @@ from datetime import datetime
 import importlib
 import logging
 import os
+import re
 from aocd.models import Puzzle
 import click
 from solutions.utils.aoc import print_answer, solve, test
@@ -26,6 +27,15 @@ def validate_day(ctx, param, day):
     return day
 
 
+def validate_file(ctx, param, file):
+    relative_path = os.path.relpath(file, ROOT_PATH)
+    print(relative_path)
+    match = re.match(r"^solutions/y(\d{4})/d(\d{2}).py$", relative_path)
+    if not match:
+        raise click.BadParameter("file should be in format solutions/y<year>/d<day>.py")
+    return tuple(map(int, match.groups()))
+
+
 def get_answers(puzzle):
     ans_1 = ans_2 = None
     try:
@@ -39,10 +49,14 @@ def get_answers(puzzle):
 @click.command()
 @click.option("--year", "-y", default=TODAY.year, callback=validate_year)
 @click.option("--day", "-d", default=TODAY.day, callback=validate_day)
+@click.option("--file", "-f", default=None, callback=validate_file)
 @click.option("--test", "-t", "do_test", is_flag=True)
 @click.option("--verbose", "-v", is_flag=True)
-def main(year, day, do_test, verbose):
+def main(year, day, file, do_test, verbose):
     logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+
+    if file is not None:
+        year, day = file
 
     mod_name = f"solutions.y{year}.d{day:02d}"
     module = importlib.import_module(mod_name)

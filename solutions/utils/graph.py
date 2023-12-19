@@ -10,8 +10,6 @@ def v(*args):
     return np.array(args)
 
 
-
-
 def neighbors4(i, j, max_i, max_j=None):
     if isinstance(max_i, list):
         max_j = len(max_i[0])
