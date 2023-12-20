@@ -28,6 +28,9 @@ def validate_day(ctx, param, day):
 
 
 def validate_file(ctx, param, file):
+    if file is None:
+        return None
+
     relative_path = os.path.relpath(file, ROOT_PATH)
     print(relative_path)
     match = re.match(r"^solutions/y(\d{4})/d(\d{2}).py$", relative_path)
