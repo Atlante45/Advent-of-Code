@@ -41,12 +41,11 @@ def parse(data):
 
 
 def simulate(modules, types, inputs, outputs, states):
-    low_pulses = 0
-    high_pulses = 0
+    pulses = [0, 0]
 
     queue = deque()
     queue.append(("button", "broadcaster", False))
-    low_pulses += 1
+    pulses[0] += 1
 
     while queue:
         snd, mod, pulse = queue.popleft()
@@ -57,32 +56,22 @@ def simulate(modules, types, inputs, outputs, states):
             case None:
                 for out in outputs[id]:
                     queue.append((mod, out, pulse))
-                    if pulse:
-                        high_pulses += 1
-                    else:
-                        low_pulses += 1
+                    pulses[pulse] += 1
             case "%":
                 if not pulse:
                     states[id] = not states[id]
                     for out in outputs[id]:
-                        if states[id]:
-                            queue.append((mod, out, True))
-                            high_pulses += 1
-                        else:
-                            queue.append((mod, out, False))
-                            low_pulses += 1
+                        queue.append((mod, out, states[id]))
+                        pulses[states[id]] += 1
             case "&":
                 ido = inputs[id].index(snd)
                 states[id][ido] = pulse
                 for out in outputs[id]:
-                    if all(states[id]):
-                        queue.append((mod, out, False))
-                        low_pulses += 1
-                    else:
-                        queue.append((mod, out, True))
-                        high_pulses += 1
+                    pulse = not all(states[id])
+                    queue.append((mod, out, pulse))
+                    pulses[pulse] += 1
 
-    return low_pulses, high_pulses
+    return pulses[0], pulses[1]
 
 
 def part1(modules, types, inputs, outputs):
@@ -124,11 +113,11 @@ def part2(modules, types, inputs, outputs):
 
     # Find the cycle length for each module chains
     cycles = []
-    for k, v in links.items():
-        end = ends[k]
+    for start, bit_mods in links.items():
+        end = ends[start]
         cycle = 0
-        for i, b in enumerate(v):
-            if b in inputs[modules[end]]:
+        for i, bit_mod in enumerate(bit_mods):
+            if bit_mod in inputs[modules[end]]:
                 cycle += 2 ** (i + 1)
         cycles += [cycle + 1]
 
