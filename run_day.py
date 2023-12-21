@@ -32,7 +32,6 @@ def validate_file(ctx, param, file):
         return None
 
     relative_path = os.path.relpath(file, ROOT_PATH)
-    print(relative_path)
     match = re.match(r"^solutions/y(\d{4})/d(\d{2}).py$", relative_path)
     if not match:
         raise click.BadParameter("file should be in format solutions/y<year>/d<day>.py")
@@ -65,7 +64,7 @@ def main(year, day, file, do_test, verbose):
     module = importlib.import_module(mod_name)
     puzzle = Puzzle(year, day)
 
-    logger.info(f"{year}/{day} {puzzle.title}")
+    logger.info(f"{year} Day {day}: {puzzle.title}")
 
     if not do_test or test(module):
         logger.info("input:")
