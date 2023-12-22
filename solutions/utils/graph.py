@@ -10,6 +10,21 @@ def v(*args):
     return np.array(args)
 
 
+def gen_primes():
+    """Generate an infinite sequence of prime numbers."""
+    D = {}
+    q = 2
+    while True:
+        if q not in D:
+            yield q
+            D[q * q] = [q]
+        else:
+            for p in D[q]:
+                D.setdefault(p + q, []).append(p)
+            del D[q]
+        q += 1
+
+
 def neighbors4(i, j, max_i, max_j=None):
     if isinstance(max_i, list):
         max_j = len(max_i[0])

@@ -82,9 +82,11 @@ def solve(generators, microchips):
     while heap:
         steps, moves, elevator, generators, microchips, rec = heapq.heappop(heap)
 
-        if (elevator, tuple(generators), tuple(microchips)) in history:
+        state = (elevator, tuple(sorted(zip(generators, microchips))))
+        if state in history:
             continue
-        history.add((elevator, tuple(generators), tuple(microchips)))
+        history.add(state)
+
         if DEBUG:
             rec.append((steps, moves, elevator, generators, microchips))
 

@@ -1,5 +1,3 @@
-from itertools import count
-
 from solutions.utils.graph import neighbors4
 
 
