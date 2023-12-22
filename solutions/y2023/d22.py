@@ -24,11 +24,27 @@ def bheight(b):
     return b[1][2] - b[0][2]
 
 
-def part1(bricks):
+def cascade(brick, support_lists, supports_lists):
+    todo = supports_lists[brick]
+    fell = set([brick])
+    while todo:
+        brick = todo.pop()
+        if brick in fell or any(j not in fell for j in support_lists[brick]):
+            continue
+        fell.add(brick)
+        todo.extend([b for b in supports_lists[brick] if b not in fell])
+    return len(fell) - 1
+
+
+def parts(bricks):
     bricks.sort(key=lambda x: x[0][2])
 
     brick_heights = {}
+    # Yes, I like distinct and descriptive names :)
     support_bricks = set()
+    supports_lists = defaultdict(list)
+    support_lists = defaultdict(list)
+
     for i, brick in enumerate(bricks):
         supports = {
             j: height + bheight(bricks[j])
@@ -40,56 +56,19 @@ def part1(bricks):
             continue
         support_height = max(supports.values())
         supports = [i for i, h in supports.items() if h == support_height]
-        brick_heights[i] = support_height + 1
+
         if len(supports) == 1:
             support_bricks.add(supports[0])
 
-    return len(bricks) - len(support_bricks)
-
-
-def part2(bricks):
-    bricks.sort(key=lambda x: x[0][2])
-
-    brick_heights = {}
-    supports_lists = defaultdict(list)
-    support_lists = defaultdict(list)
-    for i, brick in enumerate(bricks):
-        supports = {
-            j: height + bheight(bricks[j])
-            for j, height in brick_heights.items()
-            if overlaps(brick, bricks[j])
-        }
-        if not supports:
-            brick_heights[i] = 1
-            continue
-        support_height = max(supports.values())
-        supports = [i for i, h in supports.items() if h == support_height]
         brick_heights[i] = support_height + 1
-
         support_lists[i] = supports
         for j in supports:
             supports_lists[j].append(i)
 
-    res = 0
-    for i in range(len(bricks)):
-        sum = 0
-        todo = [i]
-        fell = set(support_lists[i])
-        while todo:
-            brick = todo.pop()
-            if brick not in fell and all(j in fell for j in support_lists[brick]):
-                sum += 1
-                fell.add(brick)
-                for j in supports_lists[brick]:
-                    if j not in fell:
-                        todo.append(j)
+    p1res = len(bricks) - len(support_bricks)
+    p2res = sum(cascade(i, support_lists, supports_lists) for i in range(len(bricks)))
+    return p1res, p2res
 
-        if sum > 1:
-            res += sum - 1
-    return res
-
-
-# 1179 too low
 
 TEST_DATA = {}
 TEST_DATA[
