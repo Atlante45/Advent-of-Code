@@ -4,7 +4,7 @@ from itertools import pairwise
 import re
 
 
-DEBUG = True
+DEBUG = False
 
 
 def debug(elevator, generators, microchips):
