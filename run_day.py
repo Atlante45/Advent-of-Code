@@ -16,13 +16,13 @@ TEMPLATE_PATH = os.path.join(ROOT_PATH, "template.py")
 
 
 def validate_year(ctx, param, year):
-    if year < 2015 or year > TODAY.year:
+    if year is not None and (year < 2015 or year > TODAY.year):
         raise click.BadParameter(f"year should be in range [2015, {TODAY.year}]")
     return year
 
 
 def validate_day(ctx, param, day):
-    if day < 1 or day > 25:
+    if day is not None and (day < 1 or day > 25):
         raise click.BadParameter("day should be in range [0, 25]")
     return day
 
@@ -49,8 +49,8 @@ def get_answers(puzzle):
 
 
 @click.command()
-@click.option("--year", "-y", default=TODAY.year, callback=validate_year)
-@click.option("--day", "-d", default=TODAY.day, callback=validate_day)
+@click.option("--year", "-y", default=None, callback=validate_year)
+@click.option("--day", "-d", default=None, callback=validate_day)
 @click.option("--file", "-f", default=None, callback=validate_file)
 @click.option("--test", "-t", "do_test", is_flag=True)
 @click.option("--verbose", "-v", is_flag=True)
@@ -59,6 +59,11 @@ def main(year, day, file, do_test, verbose):
 
     if file is not None:
         year, day = file
+
+    if year is None:
+        year = validate_year(TODAY.year)
+    if day is None:
+        day = validate_day(TODAY.day)
 
     mod_name = f"solutions.y{year}.d{day:02d}"
     module = importlib.import_module(mod_name)
