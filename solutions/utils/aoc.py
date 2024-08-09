@@ -71,4 +71,4 @@ def print_answer(part, answer, expected, time=None):
 
     timing = f" {time:.3f}s".rjust(8) if time else ""
 
-    logger.info(f"    Part {part + 1}: {answer.rjust(20)}{suffix.ljust(20)}{timing}")
+    logger.info(f"    Part {part + 1}: {answer.rjust(32)}{suffix.ljust(20)}{timing}")
