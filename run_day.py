@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from datetime import datetime
+from datetime import datetime, UTC
 import importlib
 import logging
 import os
@@ -10,9 +10,10 @@ from solutions.utils.aoc import print_answer, solve, test
 from solutions.utils.logger import logger
 
 # Using UTC so the date is right just before the day unlocks
-TODAY = datetime.utcnow()
+TODAY = datetime.now(UTC)
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_PATH = os.path.join(ROOT_PATH, "template.py")
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 def validate_year(ctx, param, year):
@@ -48,9 +49,9 @@ def get_answers(puzzle):
     return ans_1, ans_2
 
 
-@click.command()
-@click.option("--year", "-y", default=None, callback=validate_year)
-@click.option("--day", "-d", default=None, callback=validate_day)
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option("--year", "-y", type=int, default=None, callback=validate_year)
+@click.option("--day", "-d", type=int, default=None, callback=validate_day)
 @click.option("--file", "-f", default=None, callback=validate_file)
 @click.option("--test", "-t", "do_test", is_flag=True)
 @click.option("--verbose", "-v", is_flag=True)
@@ -61,9 +62,9 @@ def main(year, day, file, do_test, verbose):
         year, day = file
 
     if year is None:
-        year = validate_year(TODAY.year)
+        year = validate_year(None, None, TODAY.year)
     if day is None:
-        day = validate_day(TODAY.day)
+        day = validate_day(None, None, TODAY.day)
 
     mod_name = f"solutions.y{year}.d{day:02d}"
     module = importlib.import_module(mod_name)
