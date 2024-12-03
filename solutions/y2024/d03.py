@@ -1,29 +1,16 @@
-from math import prod
 import re
 
+R1 = re.compile(r"mul\((\d+),(\d+)\)")
+R2 = re.compile(r"don't\(\).*?do\(\)", re.DOTALL)
 
 def parse(data):
-    REGEX = r"mul\((\d+,\d+)\)|(do)\(\)|(don't)\(\)"
-    return re.findall(REGEX, data)
+    return data
 
+def part1(data):
+    return sum(int(a) * int(b) for a, b in R1.findall(data))
 
-def parts(matches):
-    enabled = True
-    sum1 = 0
-    sum2 = 0
-    for i in range(len(matches)):
-        if matches[i][1] == 'do':
-            enabled = True
-        elif matches[i][2] == "don't":
-            enabled = False
-        else:
-            x = prod(map(int, matches[i][0].split(',')))
-            sum1 += x
-            sum2 += x if enabled else 0
-
-    return sum1, sum2
-
-
+def part2(data):
+    return part1(R2.sub("", data + "do()"))
 
 
 TEST_DATA = {}
