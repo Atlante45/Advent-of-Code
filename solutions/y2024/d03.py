@@ -1,7 +1,7 @@
 import re
 
 R1 = re.compile(r"mul\((\d+),(\d+)\)")
-R2 = re.compile(r"don't\(\).*?do\(\)", re.DOTALL)
+R2 = re.compile(r"don't\(\).*?(do\(\)|$)", re.DOTALL)
 
 def parse(data):
     return data
@@ -10,7 +10,7 @@ def part1(data):
     return sum(int(a) * int(b) for a, b in R1.findall(data))
 
 def part2(data):
-    return part1(R2.sub("", data + "do()"))
+    return part1(R2.sub("", data))
 
 
 TEST_DATA = {}

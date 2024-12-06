@@ -1,24 +1,13 @@
 def parse(data):
     rules, updates = data.split('\n\n')
     rules = [tuple(map(int, rule.split('|'))) for rule in rules.splitlines()]
-    updates = [tuple(map(int, update.split(','))) for update in updates.splitlines()]
+    updates = [list(map(int, update.split(','))) for update in updates.splitlines()]
 
     return rules, updates
 
-def is_valid(update, rules):
-    for rule in rules:
-        try:
-            i1 = update.index(rule[0])
-            i2 = update.index(rule[1])
-            if i1 > i2:
-                return False
-        except ValueError:
-            pass
-    return True
-
-def fix_update(update, rules):
+def sort_update(update, rules):
     if len(update) <= 1:
-        return list(update)
+        return update
 
     before = []
     after = []
@@ -28,19 +17,21 @@ def fix_update(update, rules):
         elif update[0] == rule[1] and rule[0] in update:
             after.append(rule[0])
 
-    return fix_update(after, rules) + [update[0]] + fix_update(before, rules)
+
+    return sort_update(after, rules) + [update[0]] + sort_update(before, rules)
 
 def parts(rules, updates):
     sum1 = 0
     sum2 = 0
     for update in updates:
-        if is_valid(update, rules):
-            sum1 += update[len(update)//2]
+        sorted_update = sort_update(update, rules)
+        mid_value = sorted_update[len(sorted_update)//2]
+
+        if sorted_update == update:
+            sum1 += mid_value
         else:
-            up = fix_update(update, rules)
-            sum2 += up[len(up)//2]
-
-
+            sum2 += mid_value
+        
     return sum1, sum2
 
 
