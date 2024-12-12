@@ -9,10 +9,11 @@ def parse(data):
 def recurse(num, blinks):
     if blinks == 0:
         return 1
-    num_str = str(num)
     if num == 0:
         return recurse(1, blinks - 1)
-    elif len(num_str) % 2 == 0:
+    
+    num_str = str(num)
+    if len(num_str) % 2 == 0:
         half = len(num_str) // 2
         left = int(num_str[:half])
         right = int(num_str[half:])

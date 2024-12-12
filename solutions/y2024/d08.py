@@ -4,12 +4,13 @@ from itertools import combinations
 
 def parse(data):
     antennas = defaultdict(list)
-    for i, line in enumerate(data.splitlines()):
+    lines = data.splitlines()
+    width = len(lines[0])
+    height = len(lines)
+    for i, line in enumerate(lines):
         for j, c in enumerate(line):
             if c != '.':
                 antennas[c].append((i, j))
-    width = len(line)
-    height = len(data.splitlines())
     return antennas, width, height
 
 

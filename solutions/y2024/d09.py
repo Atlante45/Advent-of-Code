@@ -16,8 +16,7 @@ def part1(lines):
     lines.pop()
 
     while len(lines) > 0:
-        for i in range(lines[0]):
-            res += (idx + i) * head_id
+        res += sum(range(idx, idx + lines[0])) * head_id
         idx += lines[0]
         head_id += 1
         lines.pop(0)
