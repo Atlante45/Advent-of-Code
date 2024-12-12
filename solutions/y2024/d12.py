@@ -5,98 +5,80 @@ def parse(data):
     return data.splitlines()
 
 
-def visit(lines, x, y, visited):
-    edges = 0
-    area = 1
+def visit(grid, x, y, visited):
     visited.add((x, y))
 
-    for i, j in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]:
-        if i >= 0 and i < len(lines) and j >= 0 and j < len(lines[i]) and lines[i][j] == lines[x][y]:
-            if (i, j) in visited:
-                continue
-            a, e = visit(lines, i, j, visited)
-            area += a
-            edges += e
-        else:
-            edges += 1
-    return area, edges
+    for i, j in neighbors4(x, y, grid):
+        if grid[i][j] == grid[x][y] and (i, j) not in visited:
+            visit(grid, i, j, visited)
+
+    return visited
 
 
-def visit2(lines, x, y, visited):
-    visited.add((x, y))
-
-    for i, j in neighbors4(x, y, lines):
-        if lines[i][j] == lines[x][y] and (i, j) not in visited:
-            visit2(lines, i, j, visited)
+def n4(x, y):
+    return [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
 
 
-def perimeter(area, width, height):
+def perimeter1(area):
+    return sum(1 for x, y in area for i, j in n4(x, y) if (i, j) not in area)
+
+
+def perimeter2(area):
     edges = 0
 
-    for i in range(height):
-        top = False
-        bottom = False
-        for j in range(width):
-            if (i, j) in area and (i - 1, j) not in area:
-                if not top:
-                    edges += 1
-                    top = True
-            else:
-                top = False
-            if (i, j) in area and (i + 1, j) not in area:
-                if not bottom:
-                    edges += 1
-                    bottom = True
-            else:
-                bottom = False
+    min_i = min(i for i, _ in area)
+    max_i = max(i for i, _ in area)
+    min_j = min(j for _, j in area)
+    max_j = max(j for _, j in area)
 
-    for j in range(width):
-        left = False
-        right = False
-        for i in range(height):
-            if (i, j) in area and (i, j - 1) not in area:
-                if not left:
-                    edges += 1
-                    left = True
-            else:
-                left = False
-            if (i, j) in area and (i, j + 1) not in area:
-                if not right:
-                    edges += 1
-                    right = True
-            else:
-                right = False
+    for i in range(min_i, max_i + 1):
+        top_was_edge = False
+        bottom_was_edge = False
+        for j in range(min_j, max_j + 1):
+            top_is_edge = (i, j) in area and (i - 1, j) not in area
+            bottom_is_edge = (i, j) in area and (i + 1, j) not in area
+
+            if top_is_edge and not top_was_edge:
+                edges += 1
+            if bottom_is_edge and not bottom_was_edge:
+                edges += 1
+
+            top_was_edge = top_is_edge
+            bottom_was_edge = bottom_is_edge
+
+    for j in range(min_j, max_j + 1):
+        left_was_edge = False
+        right_was_edge = False
+        for i in range(min_i, max_i + 1):
+            left_is_edge = (i, j) in area and (i, j - 1) not in area
+            right_is_edge = (i, j) in area and (i, j + 1) not in area
+
+            if left_is_edge and not left_was_edge:
+                edges += 1
+            if right_is_edge and not right_was_edge:
+                edges += 1
+
+            left_was_edge = left_is_edge
+            right_was_edge = right_is_edge
+
     return edges
 
 
-def part1(lines):
-    cost = 0
-    visited = set()
-    for i, line in enumerate(lines):
-        for j, c in enumerate(line):
-            if (i, j) not in visited:
-                area, edges = visit(lines, i, j, visited)
-                cost += area * edges
-    return cost
+def parts(grid):
+    regions = []
 
+    all_visited = set()
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if (i, j) not in all_visited:
+                visited = visit(grid, i, j, set())
+                all_visited |= visited
+                regions.append(visited)
 
-def part2(lines):
-    width = len(lines[0])
-    height = len(lines)
-    visited = set()
-    res = 0
-    for i, line in enumerate(lines):
-        for j, c in enumerate(line):
-            if (i, j) not in visited:
-                area = set()
-                visit2(lines, i, j, area)
-                visited |= area
-                # print(c, len(area), perimeter(area, width, height))
-                res += len(area) * perimeter(area, width, height)
+    p1 = sum(len(region) * perimeter1(region) for region in regions)
+    p2 = sum(len(region) * perimeter2(region) for region in regions)
 
-
-    return res
-
+    return p1, p2
 
 TEST_DATA = {}
 TEST_DATA[
@@ -106,7 +88,7 @@ BBCD
 BBCC
 EEEC
 """.rstrip()
-] = (None, 80)
+] = (140, 80)
 TEST_DATA[
     """\
 RRRRIICCFF
