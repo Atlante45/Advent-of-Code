@@ -8,33 +8,21 @@ def parse(data):
     machines = []
     for machine in data.split('\n\n'):
         match = R1.match(machine)
-        if match:
-            machines.append(list(map(int, match.groups())))
+        machines.append(list(map(int, match.groups())))
     return machines
 
+def solve(ax, ay, bx, by, px, py, added):
+    S = Solver()
+    a, b = Ints("a b")
+    S.add(a * ax + b * bx == px + added)
+    S.add(a * ay + b * by == py + added)
+    return S.model()[a].as_long() * 3 + S.model()[b].as_long() if S.check() == sat else 0
 
 def part1(machines):
-    res = 0
-    for ax, ay, bx, by, px, py in machines:
-        S = Solver()
-        a, b = Ints("a b")
-        S.add(a * ax + b * bx == px)
-        S.add(a * ay + b * by == py)
-        if S.check() == sat:
-            res += S.model()[a].as_long() * 3 + S.model()[b].as_long()
-    return res
+    return sum(solve(*machine, 0) for machine in machines)
 
 def part2(machines):
-    res = 0
-    for ax, ay, bx, by, px, py in machines:
-        S = Solver()
-        a, b = Ints("a b")
-        S.add(a * ax + b * bx == px + 10000000000000)
-        S.add(a * ay + b * by == py + 10000000000000)
-        if S.check() == sat:
-            res += S.model()[a].as_long() * 3 + S.model()[b].as_long()
-    return res
-
+    return sum(solve(*machine, 10000000000000) for machine in machines)
 
 TEST_DATA = {}
 TEST_DATA[
