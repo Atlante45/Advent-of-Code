@@ -1,6 +1,7 @@
 from collections import defaultdict
 import re
 
+
 REGEX = r"p=<(.+)>, v=<(.+)>, a=<(.+)>"
 
 
@@ -14,13 +15,19 @@ def parse(data):
 
 
 def part1(particles):
-    min_a = float("inf")
-    min_i = None
-    for i, (_, _, a) in enumerate(particles):
-        a = sum(map(abs, a))
-        if a < min_a:
-            min_a = a
-            min_i = i
+    for _ in range(400):
+        min_p = float("inf")
+        min_i = None
+        for i, (p, v, a) in enumerate(particles):
+            v = [vi + ai for vi, ai in zip(v, a)]
+            p = [pi + vi for pi, vi in zip(p, v)]
+            particles[i] = (p, v, a)
+
+            pd = sum(abs(pi) for pi in p)
+            if pd < min_p:
+                min_p = pd
+                min_i = i
+
     return min_i
 
 

@@ -1,7 +1,7 @@
 def parse(data):
     lines = data.splitlines()
 
-    state = lines[0][15]
+    starting_state = lines[0][-2]
     steps = int(lines[1].split()[-2])
 
     rules = {}
@@ -15,7 +15,7 @@ def parse(data):
             next_state = lines[j + 3][26]
             rules[state][value] = (write, move, next_state)
 
-    return state, steps, rules
+    return starting_state, steps, rules
 
 
 def part1(state, steps, rules):

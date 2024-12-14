@@ -3,9 +3,6 @@ def parse(data):
 
 
 def part1(lines):
-    assert(len(lines) % 2 == 1)
-    n = len(lines) // 2
-    
     res = 0
     idx = 0
 
@@ -33,17 +30,20 @@ def part1(lines):
                 last_id -= 1
                 last_count = lines[-1]
                 lines.pop()
-                lines.pop()
+                try:
+                    lines.pop()
+                except IndexError:
+                    pass
             res += (idx + i) * last_id
             last_count -= 1
         idx += empty_count
-    
+
     for i in range(last_count):
         res += (idx + i) * last_id
     idx += last_count
 
-
     return res
+
 
 def part2(lines):
     moved = set()
@@ -60,7 +60,9 @@ def part2(lines):
             while v > 0:
                 for j in range(last_id, file_id, -1):
                     if j not in moved and lines[2 * j] <= v:
-                        res += sum(index * j for index in range(idx, idx + lines[2 * j]))
+                        res += sum(
+                            index * j for index in range(idx, idx + lines[2 * j])
+                        )
                         moved.add(j)
                         v -= lines[2 * j]
                         idx += lines[2 * j]
@@ -70,10 +72,6 @@ def part2(lines):
                 last_v = v
         idx += v
     return res
-
-
-
-
 
 
 TEST_DATA = {}
