@@ -4,7 +4,7 @@ import importlib
 import logging
 import os
 import re
-from aocd.models import Puzzle
+from aocd.models import Puzzle, User, default_user, UnknownUserError
 import click
 from solutions.utils.aoc import print_answer, solve, test
 from solutions.utils.logger import logger
@@ -39,6 +39,17 @@ def validate_file(ctx, param, file):
     return tuple(map(int, match.groups()))
 
 
+def validate_user(ctx, param, user):
+    if user is None:
+        return default_user()
+
+    try:
+        user = User.from_id(user)
+    except UnknownUserError:
+        raise click.BadParameter("user should be a valid AoC user id")
+    return user
+
+
 def get_answers(puzzle):
     ans_1 = ans_2 = None
     try:
@@ -53,9 +64,10 @@ def get_answers(puzzle):
 @click.option("--year", "-y", type=int, default=None, callback=validate_year)
 @click.option("--day", "-d", type=int, default=None, callback=validate_day)
 @click.option("--file", "-f", default=None, callback=validate_file)
+@click.option("--user", "-u", default=None, callback=validate_user)
 @click.option("--test", "-t", "do_test", is_flag=True)
 @click.option("--verbose", "-v", is_flag=True)
-def main(year, day, file, do_test, verbose):
+def main(year, day, file, user, do_test, verbose):
     logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
     if file is not None:
@@ -68,7 +80,7 @@ def main(year, day, file, do_test, verbose):
 
     mod_name = f"solutions.y{year}.d{day:02d}"
     module = importlib.import_module(mod_name)
-    puzzle = Puzzle(year, day)
+    puzzle = Puzzle(year, day, user)
 
     logger.info(f"{year} Day {day}: {puzzle.title}")
 
