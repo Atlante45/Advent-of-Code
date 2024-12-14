@@ -4,6 +4,7 @@ import re
 
 R1 = re.compile(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)")
 
+
 def parse(data):
     return [tuple(map(int, R1.match(line).groups())) for line in data.splitlines()]
 
@@ -30,25 +31,20 @@ def part1(robots):
 
     return prod(res)
 
-def part2(robots):
 
+def part2(robots):
     for x in count(1):
-        new_robots = []
         grid = set()
         for px, py, vx, vy in robots:
-            px = (px + vx) % 101
-            py = (py + vy) % 103
-            new_robots.append((px, py, vx, vy))
+            px = (px + x * vx) % 101
+            py = (py + x * vy) % 103
+
+            if (px, py) in grid:
+                break
             grid.add((px, py))
 
-
-        for (px, py) in grid:
-            if all((px, py + i) in grid for i in range(1, 10)):
-                return x
-
-        robots = new_robots
-
-
+        if len(grid) == len(robots):
+            return x
 
 
 TEST_DATA = {}
