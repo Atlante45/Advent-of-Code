@@ -1,6 +1,3 @@
-import enum
-
-
 DIR = {
     "^": (-1, 0),
     ">": (0, 1),
@@ -46,18 +43,6 @@ def part1(instructions, map):
             boxes.remove(robot)
             boxes.add((ei, ej))
 
-    for i, row in enumerate(map):
-        for j, cell in enumerate(row):
-            if (i, j) in boxes:
-                print("O", end="")
-            elif (i, j) in walls:
-                print("#", end="")
-            elif (i, j) == robot:
-                print("@", end="")
-            else:
-                print(".", end="")
-        print()
-
     return sum(100 * i + j for i, j in boxes)
 
 
@@ -75,36 +60,16 @@ def part2(instructions, map):
             elif cell == "@":
                 robot = (i, 2 * j)
 
-    for i in range(len(map)):
-        for j in range(2 * len(map[0])):
-            if (i, j) in walls:
-                print("#", end="")
-            elif (i, j) in boxes:
-                print("[", end="")
-            elif (i, j - 1) in boxes:
-                print("]", end="")
-            elif (i, j) == robot:
-                print("@", end="")
-            else:
-                print(".", end="")
-        print()
-
     for isntr in instructions:
-        # dprint(map, robot, boxes, walls)
-        # input()
-        print("Instruction:", isntr)
-
         i, j = robot
 
         ni = i + DIR[isntr][0]
         nj = j + DIR[isntr][1]
         if (ni, nj) in walls:
-            print("Hit wall")
             continue
 
         if (ni, nj) not in boxes and (ni, nj - 1) not in boxes:
             robot = (ni, nj)
-            print("Move")
             continue
 
         eb = set()
@@ -150,7 +115,6 @@ def part2(instructions, map):
             if not success:
                 continue
 
-        print(f"Push {len(eb)} boxes: {eb}")
         new_boxes = set()
         for box in eb:
             boxes.remove(box)
