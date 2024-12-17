@@ -1,6 +1,3 @@
-from itertools import count
-
-
 def parse(data):
     lines = data.splitlines()
     a = int(lines[0].split()[-1])
@@ -10,99 +7,68 @@ def parse(data):
     return a, b, c, program
 
 
-def part1(a, b, c, program):
+def run_program(program, a, b, c):
     iptr = 0
     output = []
-    # while iptr >= 0 and iptr < len(program):
-    #     op = program[iptr]
-    #     arg = program[iptr + 1]
-    #     iptr += 2
+    while iptr >= 0 and iptr < len(program):
+        op = program[iptr]
+        arg = program[iptr + 1]
+        iptr += 2
 
-    #     if arg >= 0 and arg <= 3:
-    #         val = arg
-    #     elif arg == 4:
-    #         val = a
-    #     elif arg == 5:
-    #         val = b
-    #     elif arg == 6:
-    #         val = c
-    #     elif arg == 7:
-    #         raise "invalid arg"
+        if arg >= 0 and arg <= 3:
+            val = arg
+        elif arg == 4:
+            val = a
+        elif arg == 5:
+            val = b
+        elif arg == 6:
+            val = c
+        elif arg == 7:
+            raise "invalid arg"
 
-    #     if op == 0:
-    #         a = a // 2**val
-    #     elif op == 1:
-    #         b = b ^ arg
-    #     elif op == 2:
-    #         b = val % 8
-    #     elif op == 3:
-    #         if a != 0:
-    #             iptr = arg
-    #     elif op == 4:
-    #         b = b ^ c
-    #     elif op == 5:
-    #         output.append(val % 8)
-    #     elif op == 6:
-    #         b = a // 2**val
-    #     elif op == 7:
-    #         c = a // 2**val
-    #     else:
-    #         raise "invalid op"
+        if op == 0:
+            a = a // 2**val
+        elif op == 1:
+            b = b ^ arg
+        elif op == 2:
+            b = val % 8
+        elif op == 3:
+            if a != 0:
+                iptr = arg
+        elif op == 4:
+            b = b ^ c
+        elif op == 5:
+            output.append(val % 8)
+        elif op == 6:
+            b = a // 2**val
+        elif op == 7:
+            c = a // 2**val
+        else:
+            raise "invalid op"
 
-    while a != 0:
-        output.append(((a % 8) ^ 5) ^ 6 ^ (a >> ((a % 8) ^ 5)) % 8)
-        a = a >> 3
+    return output
 
+
+def part1(a, b, c, program):
+    output = run_program(program, a, b, c)
     return ",".join([str(x) for x in output])
 
 
-def generate(program, a):
-    if len(program) == 0:
+def generate(program, a, iptr):
+    if iptr < 0:
         return a
 
-    p = program[-1]
     for i in range(8):
         ta = (a << 3) | i
-
-        b = ta % 8
-        b = b ^ 5
-        c = ta >> b
-        b = b ^ 6
-        b = b ^ c
-
-        if b % 8 == p:
-            res = generate(program[:-1], ta)
+        output = run_program(program, ta, 0, 0)
+        if output[0] == program[iptr]:
+            res = generate(program, ta, iptr - 1)
             if res is not None:
                 return res
 
 
 def part2(a, b, c, program):
-    return generate(program, 0)
-    bs = b
-    cs = c
-
-    for x in count(0):
-        if x % 1000000 == 0:
-            print(x)
-
-        a = x
-        b = bs
-        c = cs
-
-        # iptr = 0
-        # while a != 0:
-        #     b = a % 8
-        #     b = b ^ 5
-        #     c = a >> b
-        #     b = b ^ 6
-        #     b = b ^ c
-        #     if program[iptr] != (b % 8):
-        #         break
-        #     iptr += 1
-        #     a = a >> 3
-
-        # if iptr == len(program):
-        #     return x
+    return generate(program, 0, len(program) - 1)
 
 
 TEST_DATA = {}
