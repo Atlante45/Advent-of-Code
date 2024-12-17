@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-from datetime import datetime
+from datetime import datetime, UTC
 import os
 import shutil
 import subprocess
 import click
 
 # Using UTC so the date is right just before the day unlocks
-TODAY = datetime.utcnow()
+TODAY = datetime.now(UTC)
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_PATH = os.path.join(ROOT_PATH, "template.py")
 
