@@ -1,4 +1,4 @@
-from solutions.utils.graph import dijkstra, neighbors4
+from solutions.utils.graph import binary_search, dijkstra, neighbors4
 
 
 def parse(data):
@@ -20,21 +20,33 @@ def part1(lines):
     return cost[(size - 1, size - 1)]
 
 
+def find_path(bytes, size):
+    obstacles = set(bytes)
+
+    def neighbors(cell):
+        x, y = cell
+        return [n for n in neighbors4(x, y, size) if n not in obstacles]
+
+    came_from, cost = dijkstra((0, 0), neighbors)
+
+    if (size - 1, size - 1) not in cost:
+        return None
+
+    path = set()
+    cell = (size - 1, size - 1)
+    while cell != (0, 0):
+        path.add(cell)
+        cell = came_from[cell]
+    path.add((0, 0))
+    return path
+
+
 def part2(lines):
     size = 71 if len(lines) > 1024 else 7
 
-    for i in range(1, len(lines)):
-        obstacles = set(lines[:i])
+    i = binary_search(lambda i: not find_path(lines[:i], size), 0, len(lines))
 
-        def neighbors(cell):
-            x, y = cell
-            return [n for n in neighbors4(x, y, size) if n not in obstacles]
-
-        _, cost = dijkstra((0, 0), neighbors)
-        if (size - 1, size - 1) not in cost:
-            return f"{lines[i - 1][0]},{lines[i - 1][1]}"
-
-    return None
+    return f"{lines[i - 1][0]},{lines[i - 1][1]}"
 
 
 TEST_DATA = {}

@@ -25,6 +25,16 @@ def gen_primes():
         q += 1
 
 
+def binary_search(f, low, high):
+    while low < high:
+        mid = (low + high) // 2
+        if f(mid):
+            high = mid
+        else:
+            low = mid + 1
+    return low
+
+
 def neighbors4(i, j, max_i, max_j=None):
     if isinstance(max_i, list):
         max_j = len(max_i[0])
