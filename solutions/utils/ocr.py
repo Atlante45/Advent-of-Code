@@ -1,57 +1,79 @@
-ALPHABET = {
-    ".##.\n#..#\n#..#\n####\n#..#\n#..#": "A",
-    "###.\n#..#\n###.\n#..#\n#..#\n###.": "B",
-    ".##.\n#..#\n#...\n#...\n#..#\n.##.": "C",
-    "####\n#...\n###.\n#...\n#...\n####": "E",
-    "####\n#...\n###.\n#...\n#...\n#...": "F",
-    ".##.\n#..#\n#...\n#.##\n#..#\n.###": "G",
-    "#..#\n#..#\n####\n#..#\n#..#\n#..#": "H",
-    "###.\n.#..\n.#..\n.#..\n.#..\n###.": "I",
-    "..##\n...#\n...#\n...#\n#..#\n.##.": "J",
-    "#..#\n#.#.\n##..\n#.#.\n#.#.\n#..#": "K",
-    "#...\n#...\n#...\n#...\n#...\n####": "L",
-    ".##.\n#..#\n#..#\n#..#\n#..#\n.##.": "O",
-    "###.\n#..#\n#..#\n###.\n#...\n#...": "P",
-    "###.\n#..#\n#..#\n###.\n#.#.\n#..#": "R",
-    ".###\n#...\n#...\n.##.\n...#\n###.": "S",
-    "#..#\n#..#\n#..#\n#..#\n#..#\n.##.": "U",
-    "#...\n#...\n.#.#\n..#.\n..#.\n..#.": "Y",
-    "####\n...#\n..#.\n.#..\n#...\n####": "Z",
+ALPHABET_6 = {
+    ".##.\n#..#\n#..#\n####\n#..#\n#..#": ("A", 4),
+    "###.\n#..#\n###.\n#..#\n#..#\n###.": ("B", 4),
+    ".##.\n#..#\n#...\n#...\n#..#\n.##.": ("C", 4),
+    "####\n#...\n###.\n#...\n#...\n####": ("E", 4),
+    "####\n#...\n###.\n#...\n#...\n#...": ("F", 4),
+    ".##.\n#..#\n#...\n#.##\n#..#\n.###": ("G", 4),
+    "#..#\n#..#\n####\n#..#\n#..#\n#..#": ("H", 4),
+    "###.\n.#..\n.#..\n.#..\n.#..\n###.": ("I", 4),
+    "..##\n...#\n...#\n...#\n#..#\n.##.": ("J", 4),
+    "#..#\n#.#.\n##..\n#.#.\n#.#.\n#..#": ("K", 4),
+    "#...\n#...\n#...\n#...\n#...\n####": ("L", 4),
+    ".##.\n#..#\n#..#\n#..#\n#..#\n.##.": ("O", 4),
+    "###.\n#..#\n#..#\n###.\n#...\n#...": ("P", 4),
+    "###.\n#..#\n#..#\n###.\n#.#.\n#..#": ("R", 4),
+    ".###\n#...\n#...\n.##.\n...#\n###.": ("S", 4),
+    "#..#\n#..#\n#..#\n#..#\n#..#\n.##.": ("U", 4),
+    "#...\n#...\n.#.#\n..#.\n..#.\n..#.": ("Y", 5),
+    "####\n...#\n..#.\n.#..\n#...\n####": ("Z", 4),
 }
+
+# fmt: off
+ALPHABET_10 = {
+    "..##..\n.#..#.\n#....#\n#....#\n#....#\n######\n#....#\n#....#\n#....#\n#....#" : ("A", 8),
+    "#####.\n#....#\n#....#\n#....#\n#####.\n#....#\n#....#\n#....#\n#....#\n#####." : ("B", 8),
+    ".####.\n#....#\n#.....\n#.....\n#.....\n#.....\n#.....\n#.....\n#....#\n.####." : ("C", 8),
+    "######\n#.....\n#.....\n#.....\n#####.\n#.....\n#.....\n#.....\n#.....\n######" : ("E", 8),
+    ".####.\n#....#\n#.....\n#.....\n#.....\n#..###\n#....#\n#....#\n#...##\n.###.#" : ("G", 8),
+    "#....#\n#....#\n#....#\n#....#\n######\n#....#\n#....#\n#....#\n#....#\n#....#" : ("H", 8),
+    "...###\n....#.\n....#.\n....#.\n....#.\n....#.\n....#.\n#...#.\n#...#.\n.###.." : ("J", 8),
+    "#....#\n#...#.\n#..#..\n#.#...\n##....\n##....\n#.#...\n#..#..\n#...#.\n#....#" : ("K", 8),
+    "#.....\n#.....\n#.....\n#.....\n#.....\n#.....\n#.....\n#.....\n#.....\n######" : ("L", 8),
+    "#....#\n##...#\n##...#\n#.#..#\n#.#..#\n#..#.#\n#..#.#\n#...##\n#...##\n#....#" : ("N", 8),
+    "#####.\n#....#\n#....#\n#....#\n#####.\n#.....\n#.....\n#.....\n#.....\n#....." : ("P", 8),
+    "#####.\n#....#\n#....#\n#....#\n#####.\n#..#..\n#...#.\n#...#.\n#....#\n#....#" : ("R", 8),
+    "#....#\n#....#\n.#..#.\n.#..#.\n..##..\n..##..\n.#..#.\n.#..#.\n#....#\n#....#" : ("X", 8),
+    "######\n.....#\n.....#\n....#.\n...#..\n..#...\n.#....\n#.....\n#.....\n######" : ("Z", 8),
+}
+# fmt: on
 
 FILL = "#"
 EMPTY = "."
-WIDTH = 4
-HEIGHT = 6
+
+ALPHABETS = {
+    6: (4, ALPHABET_6),
+    10: (6, ALPHABET_10),
+}
 
 
 def parse(drawing):
     lines = drawing.strip().splitlines()
-    if len(lines) != HEIGHT:
-        print("Error: invalid height")
-        return -1
+    if len(lines) not in ALPHABETS:
+        raise ValueError("Error: invalid height")
     length = len(lines[0])
-    if not all(map(lambda line: len(line) == length, lines)):
-        print("Error: inconsistant width")
-        return -2
+    if not all(len(line) == length for line in lines):
+        raise ValueError("Error: inconsistant width")
+
+    height = len(lines)
+    width, alphabet = ALPHABETS[height]
 
     result = ""
 
     index = 0
-    while length - index >= WIDTH:
-        skip = all(map(lambda line: line[index] == EMPTY, lines))
+    while length - index >= width:
+        skip = all(line[index] == EMPTY for line in lines)
         if skip:
             index += 1
             continue
-        letter = "\n".join(map(lambda line: line[index : index + WIDTH], lines))
+        big_letter = "\n".join(line[index : index + width] for line in lines)
 
-        if letter not in ALPHABET:
-            print("Error: unknown letter:\n", letter)
-            return -3
+        if big_letter not in alphabet:
+            raise ValueError(f"Error: unknown letter:\n{big_letter}")
 
-        letter = ALPHABET[letter]
+        letter, stride = alphabet[big_letter]
 
         result += letter
-        index += 5 if letter == "Y" else 4
+        index += stride
 
     return result
