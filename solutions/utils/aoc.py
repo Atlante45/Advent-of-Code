@@ -29,6 +29,9 @@ def test(module):
 
 
 def solve(module, data, skip_1=None, skip_2=None):
+    if skip_1 and skip_2:
+        return None, None, None, None
+
     if getattr(module, "parse", None) is not None:
         data = module.parse(data)
     else:
