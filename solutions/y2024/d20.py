@@ -18,50 +18,32 @@ def parse(data):
     return walls, start, end
 
 
-def part1(walls, start, end):
+def parts(walls, start, end):
     def neighbors(n):
         return [x for x in neighbors4(*n, 100000000) if x not in walls]
 
     came_from, _ = dijkstra(start, neighbors)
 
     path = []
-    pos = end
-    while pos != start:
-        path.append(pos)
-        pos = came_from[pos]
+    while end != start:
+        path.append(end)
+        end = came_from[end]
     path.append(start)
-    path.reverse()
 
-    sum = 0
+    sum1 = 0
+    sum2 = 0
     for i in range(len(path)):
         for j in range(i + 102, len(path)):
             dist = abs(path[j][0] - path[i][0]) + abs(path[j][1] - path[i][1])
+            if (j - i) - dist < 100:
+                continue
+
             if dist == 2:
-                sum += 1
-    return sum
+                sum1 += 1
+            if dist <= 20:
+                sum2 += 1
 
-
-def part2(walls, start, end):
-    def neighbors(n):
-        return [x for x in neighbors4(*n, 100000000) if x not in walls]
-
-    came_from, _ = dijkstra(start, neighbors)
-
-    path = []
-    pos = end
-    while pos != start:
-        path.append(pos)
-        pos = came_from[pos]
-    path.append(start)
-    path.reverse()
-
-    sum = 0
-    for i in range(len(path)):
-        for j in range(i + 102, len(path)):
-            dist = abs(path[j][0] - path[i][0]) + abs(path[j][1] - path[i][1])
-            if dist <= 20 and (j - i) - dist >= 100:
-                sum += 1
-    return sum
+    return sum1, sum2
 
 
 TEST_DATA = {}
