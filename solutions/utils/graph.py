@@ -1,3 +1,4 @@
+from collections import defaultdict
 from queue import PriorityQueue
 import numpy as np
 
@@ -131,6 +132,35 @@ def dijkstra(starts, neighbors, cost=None):
                 frontier.put(next, new_cost)
                 came_from[next] = current
 
+    return came_from, cost_so_far
+
+
+# Keeps track of all shortest paths
+def dijkstra_full(starts, neighbors, cost=None):
+    if not isinstance(starts, list):
+        starts = [starts]
+    if cost is None:
+        cost = lambda c, n: 1
+
+    frontier = PriorityQueue()
+    came_from = defaultdict(list)
+    cost_so_far = {}
+
+    for start in starts:
+        frontier.put(start, 0)
+        cost_so_far[start] = 0
+
+    while not frontier.empty():
+        current = frontier.get()
+
+        for next in neighbors(current):
+            new_cost = cost_so_far[current] + cost(current, next)
+            if next not in cost_so_far or new_cost < cost_so_far[next]:
+                cost_so_far[next] = new_cost
+                frontier.put(next, new_cost)
+                came_from[next] = [current]
+            if next in cost_so_far and new_cost == cost_so_far[next]:
+                came_from[next].append(current)
     return came_from, cost_so_far
 
 
