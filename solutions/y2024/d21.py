@@ -48,9 +48,9 @@ DIRS = {(0, -1): "<", (1, 0): "v", (0, 1): ">", (-1, 0): "^"}
 
 
 @cache
-def move(K, v1, v2):
+def find_move_sequences(K, v1, v2):
     if v1 == v2:
-        return [["A"]]
+        return [("A",)]
 
     sx, sy = None, None
     ex, ey = None, None
@@ -58,11 +58,8 @@ def move(K, v1, v2):
         for j, v in enumerate(row):
             if v == v1:
                 sx, sy = i, j
-            elif v == v2:
+            if v == v2:
                 ex, ey = i, j
-
-    if sx is None or ex is None:
-        raise ValueError(f"No start or end for {v1} -> {v2}")
 
     def ns(n):
         return [
@@ -76,114 +73,54 @@ def move(K, v1, v2):
         new_paths = []
         for path in all_paths:
             head = path[0]
-            # print(head, came_from[head])
             for f in came_from[head]:
                 new_paths.append([f] + path)
         all_paths = new_paths
 
     res = []
     for path in all_paths:
-        rp = []
-        for (x1, y1), (x2, y2) in pairwise(path):
-            dx, dy = x2 - x1, y2 - y1
-            d = DIRS[(dx, dy)]
-            rp.append(d)
-        res.append(rp + ["A"])
-    # print("Dijkstra", v1, v2, res)
+        rp = [DIRS[x2 - x1, y2 - y1] for (x1, y1), (x2, y2) in pairwise(path)]
+        res.append(tuple(rp + ["A"]))
     return res
 
 
 @cache
-def move_code(K, code, depth):
-    best_moves = 0
+def shortest_sequence_length(K, code, depth):
+    if depth < 0:
+        return len(code)
+
+    final_length = 0
     start = "A"
-
     for c in code:
-        moves = move(K, start, c)
-        # print("Moves", moves)
-
-        best = float("inf")
-        best_move = None
-        for m in moves:
-            # print(depth, m)
-            if depth > 0:
-                m = move_code(K2, tuple(m), depth - 1)
-            else:
-                m = len(m)
-            # print(depth, m)
-            if m < best:
-                best = m
-                best_move = m
-
-        if best_move is None:
-            raise ValueError(f"No moves for {start} -> {c}")
-
-        # print("Best move", best_move)
-        best_moves += best_move
+        sequences = find_move_sequences(K, start, c)
+        min_length = min(shortest_sequence_length(K2, s, depth - 1) for s in sequences)
+        final_length += min_length
         start = c
-    return best_moves
+
+    return final_length
+
+
+def complexity(code, num_robots):
+    numeric_code = int("".join(re.findall(r"\d", code)))
+    sequence_length = shortest_sequence_length(K1, code, num_robots)
+    return numeric_code * sequence_length
 
 
 def part1(codes):
-    sum = 0
-    for code in codes:
-        # print("Solving", code)
-        moves = move_code(K1, code, 2)
-        # print("Final moves:", moves)
-
-        c = int("".join(re.findall("\d", code)))
-        # print(len(moves), c, len(moves) * c)
-        sum += moves * c
-    return sum
+    return sum(complexity(code, 2) for code in codes)
 
 
 def part2(codes):
-    sum = 0
-    for code in codes:
-        print("Solving", code)
-        moves = move_code(K1, code, 25)
-        # print("Final moves:", moves)
-
-        c = int("".join(re.findall("\d", code)))
-        print(moves, c, moves * c)
-        sum += moves * c
-    return sum
+    return sum(complexity(code, 25) for code in codes)
 
 
 TEST_DATA = {}
 TEST_DATA[
     """\
 029A
+980A
+179A
+456A
+379A
 """.rstrip()
-] = (68 * 29, None)
-# TEST_DATA[
-#     """\
-# 980A
-# """.rstrip()
-# ] = (60 * 980, None)
-
-# TEST_DATA[
-#     """\
-# 379A
-# """.rstrip()
-# ] = (64 * 379, None)
-
-# TEST_DATA[
-#     """\
-# 179A
-# """.rstrip()
-# ] = (68 * 179, None)
-# TEST_DATA[
-#     """\
-# 456A
-# """.rstrip()
-# ] = (64 * 456, None)
-# TEST_DATA[
-#     """\
-# 029A
-# 980A
-# 179A
-# 456A
-# 379A
-# """.rstrip()
-# ] = (126384, None)
+] = (126384, None)
