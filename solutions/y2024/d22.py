@@ -15,48 +15,39 @@ def step(number):
     return number
 
 
-def generate(number, steps):
-    for _ in range(steps):
+def generate(number, steps, sequences):
+    last_price = number % 10
+    changes = []
+
+    seen = set()
+    for _ in range(4):
         number = step(number)
+        price = number % 10
+        changes.append(price - last_price)
+        last_price = price
+
+    for _ in range(steps - 4):
+        number = step(number)
+        price = number % 10
+        changes.append(price - last_price)
+        last_price = price
+
+        changes.pop(0)
+
+        t = tuple(changes)
+        if t in seen:
+            continue
+        seen.add(t)
+        sequences[t] += price
+
     return number
 
 
-def generate2(number, steps):
-    price = [number % 10]
-    changes = []
-
-    mapping = defaultdict(int)
-    for _ in range(steps):
-        number = step(number)
-        price.append((number % 10))
-        changes.append(price[-1] - price[-2])
-
-        if tuple(changes[-4:]) in mapping:
-            continue
-        mapping[tuple(changes[-4:])] = price[-1]
-
-    return mapping
-
-
-def part1(lines):
-    return sum(generate(int(line), 2000) for line in lines)
-
-
-def part2(lines):
-    mappings = []
-    for line in lines:
-        mapping = generate2(int(line), 2000)
-        mappings.append(mapping)
-
-    all_sequences = set()
-    for m in mappings:
-        all_sequences.update(m.keys())
-
-    max_p = 0
-    for sequence in all_sequences:
-        max_p = max(max_p, sum(m[sequence] for m in mappings))
-
-    return max_p
+def parts(lines):
+    mappings = defaultdict(int)
+    p1res = sum(generate(int(line), 2000, mappings) for line in lines)
+    p2res = max(mappings.values())
+    return p1res, p2res
 
 
 TEST_DATA = {}
@@ -67,7 +58,7 @@ TEST_DATA[
 100
 2024
 """.rstrip()
-] = (37327623, None)
+] = (37327623, 24)
 TEST_DATA[
     """\
 1
@@ -75,4 +66,4 @@ TEST_DATA[
 3
 2024
 """.rstrip()
-] = (None, 23)
+] = (37990510, 23)
