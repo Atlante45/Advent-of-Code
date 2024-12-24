@@ -9,13 +9,15 @@ packages = [{ include = "solutions" }]
 [tool.poetry.dependencies]
 python = ">=3.10"
 advent-of-code-data = "^2.0.1"
-click = "^8.1.7"
+click = "^8.1.8"
 more-itertools = "^10.1.0"
-numpy = "^1.26.2"
+numpy = "^2.2.1"
 scipy = "^1.11.4"
 tqdm = "^4.66.1"
-z3-solver = "^4.12.4"
+z3-solver = "^4.13.4.0"
 igraph = "^0.11.3"
+networkx = "^3.2.1"
+matplotlib = "^3.8.1"
 
 [tool.poetry.plugins."adventofcode.user"]
 atlante45 = "solutions:solve"
