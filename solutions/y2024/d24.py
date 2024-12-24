@@ -34,16 +34,88 @@ def part1(state, instructions):
     return res
 
 
+def analyze_adder(i, gates, igates):
+    sum_i = igates[("XOR", f"x{i:02}", f"y{i:02}")]
+    carry_i = igates[("AND", f"x{i:02}", f"y{i:02}")]
+    op, ax, bx = gates[f"z{i:02}"]
+
+    if op != "XOR":
+        return False, None, None
+
+    if ("AND", ax, bx) not in igates:
+        return False, None, None
+
+    intermediate = igates[("AND", ax, bx)]
+
+    if sum_i not in [ax, bx]:
+        return False, None, None
+
+    carry_in = ax if bx == sum_i else bx
+
+    ai, bi = sorted((intermediate, carry_i))
+    if ("OR", ai, bi) not in igates:
+        return False, None, None
+
+    carry_out = igates[("OR", ai, bi)]
+
+    return True, carry_in, carry_out
+
+
+def find_bad_wires(i, carry_in, carry_out, gates, igates):
+    x_in = f"x{i:02}"
+    y_in = f"y{i:02}"
+    z_out = f"z{i:02}"
+
+    sum_i = igates[("XOR", x_in, y_in)]
+    z_op, z_ax, z_bx = gates[z_out]
+
+    if z_op != "XOR":
+        # print(f"z{i:02} wrong op {z_op} instead of XOR")
+        wanted_gate = igates[("XOR", *sorted((carry_in, sum_i)))]
+        # print(f"Found switched wires {z_out} <-> {igates[wanted_gate]}")
+        return z_out, wanted_gate
+
+    if sum_i not in [z_ax, z_bx] and carry_in in [z_ax, z_bx]:
+        real_sum_i = z_ax if z_ax != carry_in else z_bx
+        # print(f"z{i:02} sum_i wrong, should be {real_sum_i}")
+        # print(f"Found switched wires {sum_i} <-> {real_sum_i}")
+        return sum_i, real_sum_i
+
+    # carry_i = igates[("AND", x_in, y_in)]
+    # co_op, co_ax, co_bx = gates[carry_out]
+    # if sum_i in [z_ax, z_bx] and carry_in not in [z_ax, z_bx]:
+    #     # print(f"z{i:02} carry in wrong")
+    #     bad_wires.append(carry_in)
+    # if sum_i not in [z_ax, z_bx] and carry_in not in [z_ax, z_bx]:
+    #     # print(f"z{i:02} wrong sum_i and carry_in not in z_ax, z_bx")
+    #     bad_wires.append(f"z{i:02}")
+
+    raise ValueError(f"No bad wires found for {i}")
+
+
+def check_fix(i, pair, gates, igates):
+    g = gates.copy()
+    ig = igates.copy()
+    # swap the wires
+    g[pair[0]], g[pair[1]] = g[pair[1]], g[pair[0]]
+    ig[g[pair[0]]] = pair[0]
+    ig[g[pair[1]]] = pair[1]
+
+    ok, _, _ = analyze_adder(i, g, ig)
+    assert ok
+
+
 def part2(state, instructions):
     gates = {}
     igates = {}
     for a, b in instructions:
         x, op, y = a.split()
         x, y = sorted((x, y))
+
         gates[b] = (op, x, y)
         igates[(op, x, y)] = b
 
-    bad_units = list(range(1, 45))
+    bad_units = []
     carry_ins = {}
     carry_outs = {}
 
@@ -52,78 +124,25 @@ def part2(state, instructions):
     carry_ins[45] = "z45"
 
     for i in range(1, 45):
-        sum_i = igates[("XOR", f"x{i:02}", f"y{i:02}")]
-        carry_i = igates[("AND", f"x{i:02}", f"y{i:02}")]
-        op, ax, bx = gates[f"z{i:02}"]
-
-        if op != "XOR":
-            continue
-
-        if ("AND", ax, bx) not in igates:
-            continue
-
-        intermediate = igates[("AND", ax, bx)]
-
-        if sum_i not in [ax, bx]:
-            continue
-
-        carry_in = ax if bx == sum_i else bx
-
-        ai, bi = sorted((intermediate, carry_i))
-        if ("OR", ai, bi) not in igates:
-            continue
-
-        carry_out = igates[("OR", ai, bi)]
-        carry_ins[i] = carry_in
-        carry_outs[i] = carry_out
-
-        bad_units.remove(i)
+        ok, carry_in, carry_out = analyze_adder(i, gates, igates)
+        if ok:
+            carry_ins[i] = carry_in
+            carry_outs[i] = carry_out
+        else:
+            bad_units.append(i)
 
     assert carry_outs[44] == carry_ins[45]
 
     bad_wires = []
     for i in bad_units:
-        x_in = f"x{i:02}"
-        y_in = f"y{i:02}"
-        z_out = f"z{i:02}"
         carry_in = carry_outs[i - 1]
         carry_out = carry_ins[i + 1]
+        pair = find_bad_wires(i, carry_in, carry_out, gates, igates)
 
-        sum_i = igates[("XOR", x_in, y_in)]
-        carry_i = igates[("AND", x_in, y_in)]
-        z_op, z_ax, z_bx = gates[z_out]
-        co_op, co_ax, co_bx = gates[carry_out]
+        # Confirms each swaps confined to a single unit
+        # check_fix(i, pair, gates, igates)
 
-        if z_op != "XOR":
-            # print(f"z{i:02} wrong op {z_op} instead of XOR")
-            bad_wires.append(f"z{i:02}")
-
-            wanted_gate = ("XOR", *sorted((carry_in, sum_i)))
-            if wanted_gate in igates:
-                bad_wires.append(igates[wanted_gate])
-                # print(f"Found switched wires {z_out} <-> {igates[wanted_gate]}")
-                continue
-
-        else:
-            if sum_i in [z_ax, z_bx] and carry_in not in [z_ax, z_bx]:
-                # print(f"z{i:02} carry in wrong")
-                bad_wires.append(carry_in)
-            if sum_i not in [z_ax, z_bx] and carry_in in [z_ax, z_bx]:
-                real_sum_i = z_ax if z_ax != carry_in else z_bx
-                # print(f"z{i:02} sum_i wrong, should be {real_sum_i}")
-                bad_wires.append(sum_i)
-                bad_wires.append(real_sum_i)
-                # print(f"Found switched wires {sum_i} <-> {real_sum_i}")
-
-            if sum_i not in [z_ax, z_bx] and carry_in not in [z_ax, z_bx]:
-                # print(f"z{i:02} wrong sum_i and carry_in not in z_ax, z_bx")
-                bad_wires.append(f"z{i:02}")
-
-        if co_op != "OR":
-            # print(f"z{i:02} carry out wrong op {co_op} instead of OR")
-            bad_wires.append(carry_ins[i + 1])
-        else:
-            pass
+        bad_wires.extend(pair)
 
     return ",".join(sorted(bad_wires))
 
