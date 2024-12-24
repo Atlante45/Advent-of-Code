@@ -35,24 +35,14 @@ def part1(state, instructions):
 
 
 def part2(state, instructions):
-    s = []
     gates = {}
     igates = {}
-    aliases = {}
     for a, b in instructions:
         x, op, y = a.split()
         x, y = sorted((x, y))
         gates[b] = (op, x, y)
         igates[(op, x, y)] = b
-        if x.startswith("x"):
-            assert y.startswith("y")
-            assert x[1:] == y[1:]
-            s.append((x, y, op, b))
 
-            if not b.startswith("z"):
-                aliases[b] = f"{'c' if op == 'AND' else 's'}{x[1:]}"
-
-    bad_list = set(gates.keys())
     bad_units = list(range(1, 45))
     carry_ins = {}
     carry_outs = {}
@@ -88,13 +78,6 @@ def part2(state, instructions):
         carry_outs[i] = carry_out
 
         bad_units.remove(i)
-        bad_list.remove(f"z{i:02}")
-        bad_list.remove(sum_i)
-        bad_list.remove(carry_i)
-        bad_list.remove(intermediate)
-
-        if i - 1 in carry_outs and carry_outs[i - 1] == carry_in:
-            bad_list.remove(carry_in)
 
     assert carry_outs[44] == carry_ins[45]
 
