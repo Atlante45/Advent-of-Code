@@ -57,14 +57,7 @@ def neighbors4(i, j, max_i=None, max_j=None):
     return [(x, y) for (x, y) in cells if x >= 0 and x < max_i and y >= 0 and y < max_j]
 
 
-def neighbors8(i, j, max_i, max_j=None):
-    if isinstance(max_i, list) or isinstance(max_i, tuple):
-        max_j = len(max_i[0])
-        max_i = len(max_i)
-
-    if not max_j:
-        max_j = max_i
-
+def neighbors8(i, j, max_i=None, max_j=None):
     cells = [
         (i - 1, j),
         (i + 1, j),
@@ -75,6 +68,16 @@ def neighbors8(i, j, max_i, max_j=None):
         (i + 1, j - 1),
         (i + 1, j + 1),
     ]
+
+    if max_i is None:
+        return cells
+
+    if isinstance(max_i, list) or isinstance(max_i, tuple):
+        max_j = len(max_i[0])
+        max_i = len(max_i)
+
+    if not max_j:
+        max_j = max_i
 
     return [(x, y) for (x, y) in cells if x >= 0 and x < max_i and y >= 0 and y < max_j]
 
